@@ -64,6 +64,10 @@
                     <x-input-label for="password" :value="__('Password')" />
                     <x-text-input id="password" class="block mt-2 w-full" type="password" name="password" required autocomplete="new-password" />
                     <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                    <p class="mt-1 text-xs text-pink-600">
+                        Minimal panjang password 8 karakter, mengandung: 
+                        <span class="font-semibold">Angka, Huruf Kapital, dan Karakter Khusus (@#$%&*)</span>.
+                    </p>
                 </div>
 
                 <div class="mb-6">

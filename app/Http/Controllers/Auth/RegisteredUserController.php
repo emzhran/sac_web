@@ -35,9 +35,25 @@ class RegisteredUserController extends Controller
             'fakultas' => ['required', 'string', 'max:255'],
             'prodi' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, 'ends_with:@mail.umy.ac.id'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => [
+                'required', 
+                'confirmed', 
+                Rules\Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(), 
+            ],
+
         ], [
-            'email.ends_with' => 'Email yang digunakan harus menggunakan domain UMY (contoh: user@mail.umy.ac.id).'
+            'email.ends_with' => 'Email yang digunakan harus menggunakan domain UMY (contoh: user@mail.umy.ac.id).',
+            'password.min' => 'Kata sandi minimal harus :min karakter.',
+            'password.mixed' => 'Kata sandi harus mengandung minimal satu huruf kapital dan satu huruf kecil.',
+            'password.numbers' => 'Kata sandi harus mengandung minimal satu angka.',
+            'password.symbols' => 'Kata sandi harus mengandung minimal satu karakter khusus.',
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
+            'password.required' => 'Kolom kata sandi wajib diisi.',
+
+
         ]);
 
         $user = User::create([
