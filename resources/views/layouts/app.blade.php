@@ -31,6 +31,7 @@
                 @endisset
 
                 <main class="p-10">
+                    {{ $slot ?? '' }} 
                     @yield('content')
                 </main>
             </div>
