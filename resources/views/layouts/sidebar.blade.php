@@ -10,7 +10,7 @@
     </div>
 
     <nav class="mt-8 flex-1 relative">
-        <ul class="space-y-2 text-gray-700">    
+        <ul class="space-y-2 text-gray-700">    
             
             <li>
                 <a href="{{ route('dashboard') }}"
@@ -18,6 +18,15 @@
                    {{ request()->routeIs('dashboard') ? 'bg-blue-500 text-white' : 'hover:bg-gray-100' }}">
                     <img src="{{ asset('asset/images/image.png') }}" alt="home" class="w-4 h-4">
                     <span>Dashboard</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="{{ route('profile.edit') }}"
+                   class="block py-2 px-4 flex items-center space-x-3 rounded text-sm 
+                   {{ request()->routeIs('profile.edit') ? 'bg-blue-500 text-white' : 'hover:bg-gray-100' }}">
+                    <img src="{{ asset('asset/images/person.png') }}" alt="Profil" class="w-4 h-4">
+                    <span>Profil Saya</span>
                 </a>
             </li>
             
@@ -97,7 +106,7 @@
             {{-- Profil & Logout --}}
             <li class="absolute bottom-0 left-0 w-full flex flex-col">
                 
-                <div class="p-4">
+                <div class="p-4 hidden"> 
                     <a href="{{ route('profile.edit') }}">
                         <img src="{{ asset('asset/images/person.png') }}" alt="Profil" class="w-8 h-8">
                     </a>
@@ -106,7 +115,7 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="block w-full py-2 px-4 flex items-center space-x-3 rounded text-sm 
-                    hover:bg-red-500 hover:text-white transition text-gray-700 hover:text-white">
+                    hover:bg-red-500 hover:text-white transition text-gray-700">
                         <img src="{{ asset('asset/images/keluar.png') }}" alt="out" class="w-4 h-4">
                         <span>Keluar</span>
                     </button>
