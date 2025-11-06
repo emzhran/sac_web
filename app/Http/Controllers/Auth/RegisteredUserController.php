@@ -31,12 +31,20 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'nim' => ['required', 'string', 'max:11', 'unique:'.User::class],
+            'fakultas' => ['required', 'string', 'max:255'],
+            'prodi' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, 'ends_with:@mail.umy.ac.id'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'email.ends_with' => 'Email yang digunakan harus menggunakan domain UMY (contoh: user@mail.umy.ac.id).'
         ]);
 
         $user = User::create([
             'name' => $request->name,
+            'nim' => $request->nim,
+            'fakultas' => $request->fakultas,
+            'prodi' => $request->prodi,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);

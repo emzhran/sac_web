@@ -1,6 +1,6 @@
 <x-guest-layout class="bg-gray-100 min-h-screen flex items-center justify-end px-10">
     <div class="relative flex w-full max-w-7xl bg-white rounded-xl shadow-lg overflow-hidden">
-        
+
         <!-- LOGO -->
         <div class="w-1/2 bg-pink-100 flex items-center justify-center">
             <img src="{{ asset('asset/images/logo-umy-sac-transparan-01.png') }}" alt="Logo" class="w-80 h-auto">
@@ -36,6 +36,15 @@
                     <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded-md shadow-md text-lg">
                         MASUK
                     </button>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-600">
+                        Belum punya akun?
+                        <a href="{{ route('register') }}" class="font-semibold text-pink-600 hover:text-pink-700 underline">
+                            Daftar Sekarang.
+                        </a>
+                    </p>
                 </div>
             </form>
         </div>
