@@ -17,7 +17,11 @@
     <body class="font-sans antialiased bg-gray-100">
         <div class="flex min-h-screen">
 
-            @include('layouts.sidebar')
+            @if (Auth::check() && Auth::user()->role === 'admin')
+                @include('layouts.sidebar-admin')
+            @else
+                @include('layouts.sidebar')
+            @endif
 
             <div class="flex-1 ml-64">
                 @include('layouts.navigation')
