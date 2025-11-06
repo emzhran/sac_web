@@ -31,7 +31,7 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'nim' => ['required', 'string', 'max:11', 'unique:'.User::class],
+            'nim' => ['required', 'regex:/^[0-9]+$/', 'unique:'.User::class, 'digits_between:5,11'],
             'fakultas' => ['required', 'string', 'max:255'],
             'prodi' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, 'ends_with:@mail.umy.ac.id'],
@@ -45,6 +45,15 @@ class RegisteredUserController extends Controller
             ],
 
         ], [
+            'nim.required' => 'Kolom Nomor Induk Mahasiswa (NIM) wajib diisi.',
+            'nim.integer' => 'Nomor Induk Mahasiswa (NIM) harus berupa angka.',
+            'nim.digits_between' => 'Nomor Induk Mahasiswa (NIM) harus berupa angka antara :min dan :max digit.',
+            'nim.unique' => 'Nomor Induk Mahasiswa (NIM) ini sudah terdaftar.',
+            'name.required' => 'Kolom Nama Lengkap wajib diisi.',
+            'fakultas.required' => 'Kolom Fakultas wajib diisi.',
+            'prodi.required' => 'Kolom Program Studi wajib diisi.',
+            'email.required' => 'Kolom Email wajib diisi.',
+            'email.unique' => 'Email ini sudah terdaftar.',
             'email.ends_with' => 'Email yang digunakan harus menggunakan domain UMY (contoh: user@mail.umy.ac.id).',
             'password.min' => 'Kata sandi minimal harus :min karakter.',
             'password.mixed' => 'Kata sandi harus mengandung minimal satu huruf kapital dan satu huruf kecil.',
