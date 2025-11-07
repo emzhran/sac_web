@@ -70,9 +70,19 @@
 
                             <td class="px-3 py-2 text-sm text-center">
                                 @if ($isBooked)
-                                    <div class="bg-red-100 p-1 rounded border border-red-300 text-red-800 text-center text-xs font-semibold">
+                                    @php
+                                        $colorClass = 'bg-red-100 border-red-300 text-red-800 text-red-600';
+                                        if (strtolower($isBooked['status']) === 'approved') {
+                                            $colorClass = 'bg-green-100 border-green-300 text-green-800 text-green-600';
+                                        }
+                                        if (strtolower($isBooked['status']) === 'pending') {
+                                            $colorClass = 'bg-gray-100 border-gray-300 text-gray-800 text-gray-600';
+                                        }
+                                    @endphp
+
+                                    <div class="p-1 rounded border text-center text-xs font-semibold {{ explode(' ', $colorClass)[0] }} {{ explode(' ', $colorClass)[1] }} {{ explode(' ', $colorClass)[2] }}">
                                         {{ $isBooked['nama'] }}
-                                        <div class="text-xs text-red-600 italic">({{ $isBooked['status'] }})</div>
+                                        <div class="text-xs italic {{ explode(' ', $colorClass)[3] }}">({{ $isBooked['status'] }})</div>
                                     </div>
                                 @else
                                     <span class="text-gray-400 text-xs italic">Kosong</span>
