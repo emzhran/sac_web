@@ -46,7 +46,7 @@
             <table class="min-w-full divide-y divide-gray-200 border border-gray-300">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Booking</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Lapangan</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pemesan</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal & Waktu</th>
@@ -59,16 +59,17 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach ($bookings as $booking)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $booking->id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {{ $loop->iteration + ($bookings->currentPage() - 1) * $bookings->perPage() }}
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-semibold">
                                 {{ $booking->lapangan->nama ?? 'N/A' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $booking->nama_pemesan }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                @if($booking->jadwals->isNotEmpty())
-                                    @php $jadwal = $booking->jadwals->first(); @endphp
-                                    {{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }} 
-                                    ({{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }})
+                               @if($booking->jadwal)
+                                    {{ \Carbon\Carbon::parse($booking->jadwal->tanggal)->format('d M Y') }}
+                                    ({{ $booking->jadwal->jam_mulai }} - {{ $booking->jadwal->jam_selesai }})
                                 @else
                                     Jadwal tidak ditemukan
                                 @endif

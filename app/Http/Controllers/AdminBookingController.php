@@ -12,13 +12,18 @@ class AdminBookingController extends Controller
     public function index(Request $request)
     {
         $status = $request->get('status', 'pending');
-        $query = Booking::with('lapangan', 'jadwals');
+        $query = Booking::with(['lapangan', 'jadwal']);
 
         if ($status !== 'all') {
             $query->where('status', $status);
         }
-        
-        $bookings = $query->orderBy('created_at', 'desc')->paginate(10); 
+
+        $bookings = $query->whereHas('jadwal')
+            ->join('jadwals', 'bookings.id', '=', 'jadwals.booking_id')
+            ->orderBy('jadwals.tanggal', 'asc')
+            ->select('bookings.*')
+            ->paginate(10);
+
         return view('admin.booking.index', compact('bookings', 'status'));
     }
 
