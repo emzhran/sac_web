@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,6 +14,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+        DB::table('users')->truncate(); 
+        
+        DB::table('jadwals')->truncate(); 
+        DB::table('bookings')->truncate(); 
+        DB::table('lapangans')->truncate(); 
+
+        $this->call([
+            LapanganSeeder::class,
+        ]);
+        
         User::factory()->create([
             'name' => 'Kelompok 3',
             'email' => 'kelompok3@example.com',
@@ -26,5 +39,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('admin123'),
             'role' => 'admin',
         ]);
+        
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

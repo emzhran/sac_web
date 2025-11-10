@@ -4,80 +4,66 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Futsal;
-use App\Models\Badminton;
-use App\Models\Voli;
-use App\Models\Basket;
+use App\Models\Lapangan; 
+use App\Models\Booking; 
+use App\Models\Jadwal;   
+use Carbon\Carbon;
 
 class AdminDashboardController extends Controller
 {
     public function index()
     {
         $successStatus = 'approved';
+        $pendingStatus = 'pending';
         $startOfMonth = now()->startOfMonth()->toDateString();
         $endOfMonth = now()->endOfMonth()->toDateString();
-
-        $futsalBookings = Futsal::whereDate('jadwal', '>=', $startOfMonth)
-            ->whereDate('jadwal', '<=', $endOfMonth)
+        $startOfMonthTime = now()->startOfMonth();
+        $endOfMonthTime = now()->endOfMonth();
+        $totalBookings = Booking::where('status', $successStatus)
+            ->whereBetween('created_at', [$startOfMonthTime, $endOfMonthTime])
+            ->count();
+        $pendingBookings = Booking::where('status', $pendingStatus)
+            ->whereBetween('created_at', [$startOfMonthTime, $endOfMonthTime])
+            ->count();
+        $usageStats = Booking::select('lapangan_id', DB::raw('COUNT(*) as bookings_count'))
             ->where('status', $successStatus)
-            ->count();
+            ->whereBetween('created_at', [$startOfMonthTime, $endOfMonthTime])
+            ->groupBy('lapangan_id')
+            ->get();
+        
+        $lapangans = Lapangan::all();
+        $fieldDetails = [];
+        $maxBookings = 0;
+        $mostUsedField = 'N/A';
 
-        $badmintonBookings = Badminton::whereDate('jadwal', '>=', $startOfMonth)
-            ->whereDate('jadwal', '<=', $endOfMonth)
-            ->where('status', $successStatus)
-            ->count();
+        $colors = ['red', 'yellow', 'green', 'purple', 'indigo', 'pink'];
+        $colorIndex = 0;
 
-        $voliBookings = Voli::whereDate('jadwal', '>=', $startOfMonth)
-            ->whereDate('jadwal', '<=', $endOfMonth)
-            ->where('status', $successStatus)
-            ->count();
+        foreach ($lapangans as $lapangan) {
+            $count = $usageStats->where('lapangan_id', $lapangan->id)->first()->bookings_count ?? 0;
+            
+            $displayName = strtok($lapangan->nama, ' ');
 
-        $basketBookings = Basket::whereDate('jadwal', '>=', $startOfMonth)
-            ->whereDate('jadwal', '<=', $endOfMonth)
-            ->where('status', $successStatus)
-            ->count();
-
-        $allBookings = [
-            'Futsal' => $futsalBookings,
-            'Badminton' => $badmintonBookings,
-            'Voli' => $voliBookings,
-            'Basket' => $basketBookings,
-        ];
-
-        $totalBookings = array_sum($allBookings);
-
-        $pendingFutsal = Futsal::whereDate('jadwal', '>=', $startOfMonth)
-            ->whereDate('jadwal', '<=', $endOfMonth)
-            ->where('status', 'pending')
-            ->count();
-
-        $pendingBadminton = Badminton::whereDate('jadwal', '>=', $startOfMonth)
-            ->whereDate('jadwal', '<=', $endOfMonth)
-            ->where('status', 'pending')
-            ->count();
-
-        $pendingVoli = Voli::whereDate('jadwal', '>=', $startOfMonth)
-            ->whereDate('jadwal', '<=', $endOfMonth)
-            ->where('status', 'pending')
-            ->count();
-
-        $pendingBasket = Basket::whereDate('jadwal', '>=', $startOfMonth)
-            ->whereDate('jadwal', '<=', $endOfMonth)
-            ->where('status', 'pending')
-            ->count();
-
-        $pendingBookings = $pendingFutsal + $pendingBadminton + $pendingVoli + $pendingBasket;
-
-        $mostUsedField = $totalBookings > 0
-            ? array_search(max($allBookings), $allBookings)
-            : 'N/A';
-
-        $fieldDetails = [
-            ['name' => 'Futsal', 'bookings' => $futsalBookings, 'color' => 'red'],
-            ['name' => 'Badminton', 'bookings' => $badmintonBookings, 'color' => 'yellow'],
-            ['name' => 'Voli', 'bookings' => $voliBookings, 'color' => 'green'],
-            ['name' => 'Basket', 'bookings' => $basketBookings, 'color' => 'purple'],
-        ];
+            $fieldDetails[] = [
+                'name' => $displayName,
+                'bookings' => $count,
+                'color' => $colors[$colorIndex % count($colors)],
+            ];
+            $colorIndex++;
+            
+            if ($count > $maxBookings) {
+                $maxBookings = $count;
+                $mostUsedField = $displayName;
+            }
+        }
+        
+        $facultyUsageRaw = Booking::select('users.fakultas', DB::raw('COUNT(bookings.id) as bookings'))
+            ->join('users', 'bookings.nama_pemesan', '=', 'users.name') 
+            ->where('bookings.status', $successStatus)
+            ->whereBetween('bookings.created_at', [$startOfMonthTime, $endOfMonthTime])
+            ->whereNotNull('users.fakultas')
+            ->groupBy('users.fakultas')
+            ->get();
 
         $allFaculties = [
             'Teknik', 'Agama Islam', 'Kedokteran & Ilmu Kesehatan', 'Kedokteran Gigi',
@@ -85,35 +71,13 @@ class AdminDashboardController extends Controller
             'Hukum', 'Psikologi',
         ];
 
-        $models = [new Futsal(), new Badminton(), new Voli(), new Basket()];
-        $facultyCounts = collect();
-        $foreignKey = 'id';
-
-        foreach ($models as $model) {
-            $tableName = $model->getTable();
-
-            $usage = DB::table($tableName)
-                ->select('users.fakultas', DB::raw('COUNT(*) as bookings'))
-                ->leftJoin('users', 'users.id', '=', $tableName . '.' . $foreignKey)
-                ->whereDate($tableName . '.jadwal', '>=', $startOfMonth)
-                ->whereDate($tableName . '.jadwal', '<=', $endOfMonth)
-                ->where($tableName . '.status', $successStatus)
-                ->groupBy('users.fakultas')
-                ->get();
-
-            $facultyCounts = $facultyCounts->concat($usage->pluck('bookings', 'fakultas'));
-        }
-
         $facultyUsage = [];
-        $aggregatedCounts = $facultyCounts->filter(fn($count, $fakultas) => $fakultas !== null)->reduce(function ($carry, $count, $fakultas) {
-            $carry[$fakultas] = ($carry[$fakultas] ?? 0) + $count;
-            return $carry;
-        }, []);
+        $rawCounts = $facultyUsageRaw->pluck('bookings', 'fakultas')->toArray();
 
         foreach ($allFaculties as $facultyName) {
             $facultyUsage[] = [
                 'name' => $facultyName,
-                'bookings' => $aggregatedCounts[$facultyName] ?? 0,
+                'bookings' => $rawCounts[$facultyName] ?? 0,
             ];
         }
 

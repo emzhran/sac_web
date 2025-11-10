@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('page_title', 'Pages / Jadwal Lapangan')
+@section('page_title', 'Admin / Jadwal Lapangan')
 
 @section('header')
-<h2 class="font-semibold text-xl text-gray-800 leading-tight">
-    Jadwal Pemanfaatan Lapangan
-</h2>
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        Jadwal Pemanfaatan Lapangan (Admin View)
+    </h2>
 @endsection
 
 @section('content')
@@ -12,12 +12,17 @@
     <h3 class="text-2xl font-bold mb-6 text-gray-800">Jadwal Lapangan 7 Hari ke Depan</h3>
 
     <div class="flex space-x-3 mb-6">
-        @php $lapanganFilter = request('lapangan') ?? 'Futsal'; @endphp
+        @php 
+            $filterNames = ['Futsal', 'Badminton', 'Voli', 'Basket'];
+            $currentFilterKey = strstr($lapanganFilterName, ' ', true) ?: $lapanganFilterName; 
+        @endphp
 
-        @foreach (['Futsal', 'Badminton', 'Voli', 'Basket'] as $lap)
-            <a href="{{ route('jadwal.index', ['lapangan' => $lap]) }}"
+        @foreach ($filterNames as $lap)
+            <a href="{{ route('admin.jadwal.index', ['lapangan' => $lap]) }}"
                class="px-4 py-2 rounded-lg text-sm font-semibold border 
-                      {{ $lapanganFilter == $lap ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100' }}">
+                      {{ $currentFilterKey == $lap 
+                          ? 'bg-blue-500 text-white border-blue-500' 
+                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100' }}">
                 {{ $lap }}
             </a>
         @endforeach
@@ -30,10 +35,10 @@
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r">
                         Waktu
                     </th>
-
                     @foreach ($dates as $date)
-                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider 
-                            {{ $date->isToday() ? 'bg-sky-100 font-bold' : '' }}">
+                        <th scope="col" 
+                            class="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider 
+                                   {{ $date->isToday() ? 'bg-sky-100 font-bold' : '' }}">
                             {{ $date->translatedFormat('D, d/M') }}
                         </th>
                     @endforeach
@@ -49,14 +54,15 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r bg-gray-50">
                             {{ $jamMulai }} - {{ $jamSelesai }}
                         </td>
-
                         @foreach ($dates as $date)
                             @php
                                 $tanggal = $date->toDateString();
                                 $isBooked = null;
 
-                                if (isset($allBookings[$lapanganFilter][$tanggal])) {
-                                    foreach ($allBookings[$lapanganFilter][$tanggal] as $booking) {
+                                $lapKey = strstr($lapanganFilterName, ' ', true) ?: $lapanganFilterName;
+
+                                if (isset($allBookings[$lapanganFilterName][$tanggal])) {
+                                    foreach ($allBookings[$lapanganFilterName][$tanggal] as $booking) {
                                         if (
                                             $jamMulai >= $booking['jam_mulai'] &&
                                             $jamMulai < $booking['jam_selesai']
@@ -74,15 +80,17 @@
                                         $colorClass = 'bg-red-100 border-red-300 text-red-800 text-red-600';
                                         if (strtolower($isBooked['status']) === 'approved') {
                                             $colorClass = 'bg-green-100 border-green-300 text-green-800 text-green-600';
+                                        } elseif (strtolower($isBooked['status']) === 'pending') {
+                                            $colorClass = 'bg-yellow-100 border-yellow-300 text-yellow-800 text-yellow-600'; 
                                         }
-                                        if (strtolower($isBooked['status']) === 'pending') {
-                                            $colorClass = 'bg-gray-100 border-gray-300 text-gray-800 text-gray-600';
-                                        }
+                                        $classArray = explode(' ', $colorClass);
                                     @endphp
 
-                                    <div class="p-1 rounded border text-center text-xs font-semibold {{ explode(' ', $colorClass)[0] }} {{ explode(' ', $colorClass)[1] }} {{ explode(' ', $colorClass)[2] }}">
+                                    <div class="p-1 rounded border text-center text-xs font-semibold {{ $classArray[0] }} {{ $classArray[1] }} {{ $classArray[2] }}">
                                         {{ $isBooked['nama'] }}
-                                        <div class="text-xs italic {{ explode(' ', $colorClass)[3] }}">({{ $isBooked['status'] }})</div>
+                                        <div class="text-xs italic {{ $classArray[3] }}">
+                                            ({{ $isBooked['status'] }})
+                                        </div>
                                     </div>
                                 @else
                                     <span class="text-gray-400 text-xs italic">Kosong</span>
@@ -97,7 +105,7 @@
 
     <div class="mt-8 p-4 bg-yellow-50 border border-yellow-300 rounded text-sm text-yellow-800">
         <strong>Catatan:</strong> Jadwal ditampilkan merupakan jadwal hingga 7 hari ke depan.
-        Silahkan perhatikan jadwal sebelum booking lapangan.
+        Silakan perhatikan jadwal sebelum melakukan booking lapangan.
     </div>
 </div>
 @endsection
