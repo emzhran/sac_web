@@ -29,10 +29,20 @@
                 <tbody>
                     @foreach ($riwayats as $r)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-2 border font-semibold text-blue-600">{{ $r->lapangan }}</td>
-                            <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($r->jadwal)->format('d M Y') }}</td>
-                            <td class="px-4 py-2 border">{{ $r->jam_mulai }}</td>
-                            <td class="px-4 py-2 border">{{ $r->jam_selesai }}</td>
+                            <td class="px-4 py-2 border font-semibold text-blue-600">
+                                {{ $r->lapangan->nama ?? '-' }}
+                            </td>
+                            <td class="px-4 py-2 border">
+                                {{ $r->jadwal->tanggal 
+                                    ? \Carbon\Carbon::parse($r->jadwal->tanggal)->format('d M Y') 
+                                    : '-' }}
+                            </td>
+                            <td class="px-4 py-2 border">
+                                {{ $r->jadwal->jam_mulai ?? '-' }}
+                            </td>
+                            <td class="px-4 py-2 border">
+                                {{ $r->jadwal->jam_selesai ?? '-' }}
+                            </td>
                             <td class="px-4 py-2 border">
                                 @if ($r->status === 'pending')
                                     <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">Pending</span>
@@ -48,7 +58,6 @@
             </table>
         </div>
 
-        {{-- Pagination --}}
         <div class="mt-4">
             {{ $riwayats->links() }}
         </div>

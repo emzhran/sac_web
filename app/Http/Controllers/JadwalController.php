@@ -2,58 +2,94 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Basket;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Models\Futsal;
-use App\Models\Badminton;
-use App\Models\Voli;
-
+use App\Models\Lapangan; 
+use App\Models\Jadwal;   
+use App\Models\Booking; 
+use Illuminate\Database\Eloquent\Builder; 
 
 class JadwalController extends Controller
 {
     public function index(Request $request)
     {
-        $lapanganFilter = $request->query('lapangan', 'Futsal');
+        $lapangans = Lapangan::all();
+        $lapanganFilterName = $request->query('lapangan');
+        if (!$lapanganFilterName && $lapangans->isNotEmpty()) {
+            $lapanganFilterName = $lapangans->first()->nama;
+        }
 
         $dates = $this->generateDateRange(7);
-        $start = Carbon::today();
-        $end = Carbon::today()->addDays(6)->endOfDay();
+        $start = Carbon::today()->toDateString();
+        $end = Carbon::today()->addDays(6)->toDateString();
+
+        $lapangan = Lapangan::where('nama', 'LIKE', $lapanganFilterName . '%')->first();
 
         $allBookings = [];
 
-        if ($lapanganFilter === 'Futsal') {
-            $allBookings['Futsal'] = $this->fetchBookings(Futsal::class, $start, $end);
-        } elseif ($lapanganFilter === 'Badminton') {
-            $allBookings['Badminton'] = $this->fetchBookings(Badminton::class, $start, $end);
-        } elseif ($lapanganFilter === 'Voli') {
-            $allBookings['Voli'] = $this->fetchBookings(Voli::class, $start, $end);
-        } elseif ($lapanganFilter === 'Basket') {
-            $allBookings['Basket'] = $this->fetchBookings(Basket::class, $start, $end);
+        if ($lapangan) {
+            $lapanganFilterName = $lapangan->nama;
+            $allBookings[$lapanganFilterName] = $this->fetchBookings($lapangan, $start, $end);
         }
 
         $timeSlots = $this->generateTimeSlots(7, 22);
 
-        return view('lapangan.jadwal-lapangan', compact('dates', 'timeSlots', 'allBookings', 'lapanganFilter'));
+        return view('booking.index', compact('dates', 'timeSlots', 'allBookings', 'lapanganFilterName', 'lapangans'));
     }
 
-    protected function fetchBookings($modelClass, $start, $end)
+    public function adminIndex(Request $request)
     {
-        return $modelClass::whereBetween('jadwal', [$start, $end])
-            ->get(['nama', 'jadwal', 'jam_mulai', 'jam_selesai', 'status'])
-            ->map(function ($item) {
-                $tanggal = Carbon::parse($item->jadwal)->toDateString();
+        $lapanganFilterName = $request->query('lapangan', 'Futsal'); 
+        
+        $dates = $this->generateDateRange(7);
+        $start = Carbon::today()->toDateString();
+        $end = Carbon::today()->addDays(6)->toDateString();
+        
+        $lapangan = Lapangan::where('nama', 'LIKE', $lapanganFilterName . '%')->first();
 
-                return [
-                    'tanggal' => $tanggal,
-                    'jam_mulai' => Carbon::parse($item->jam_mulai)->format('H:i'),
-                    'jam_selesai' => Carbon::parse($item->jam_selesai)->format('H:i'),
-                    'nama' => $item->nama,
-                    'status' => $item->status,
-                ];
+        $allBookings = [];
+
+        if ($lapangan) {
+            $lapanganFilterName = $lapangan->nama; 
+            $allBookings[$lapanganFilterName] = $this->fetchBookings($lapangan, $start, $end);
+        } else {
+             $lapanganFilterName = 'Futsal Lapangan A';
+        }
+        
+        $timeSlots = $this->generateTimeSlots(7, 22);
+
+        return view('admin.jadwal.index', compact('dates', 'timeSlots', 'allBookings', 'lapanganFilterName'));
+    }
+
+
+    protected function fetchBookings(Lapangan $lapangan, $start, $end)
+    {
+        $jadwals = Jadwal::whereBetween('tanggal', [$start, $end])
+            ->whereHas('booking', function (Builder $query) use ($lapangan) {
+                $query->where('lapangan_id', $lapangan->id);
             })
-            ->groupBy('tanggal')
-            ->toArray();
+            ->with('booking') 
+            ->get();
+        
+        $formattedBookings = [];
+
+        foreach ($jadwals as $jadwal) {
+            $booking = $jadwal->booking;
+
+            if ($booking) {
+                $tanggal = $jadwal->tanggal;
+
+                $formattedBookings[$tanggal][] = [
+                    'jam_mulai' => $jadwal->jam_mulai,
+                    'jam_selesai' => $jadwal->jam_selesai,
+                    'nama' => $booking->nama_pemesan,
+                    'status' => $booking->status,
+                    'booking_id' => $booking->id,
+                ];
+            }
+        }
+        
+        return $formattedBookings;
     }
 
     protected function generateDateRange($days)
