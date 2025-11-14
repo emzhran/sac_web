@@ -31,38 +31,33 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'nim' => ['required', 'regex:/^[0-9]+$/', 'unique:'.User::class, 'digits_between:5,11'],
+            'nim' => ['required', 'regex:/^[0-9]+$/', 'unique:'.User::class, 'digits:11'],
             'fakultas' => ['required', 'string', 'max:255'],
             'prodi' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, 'ends_with:@mail.umy.ac.id'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, 'ends_with:@gmail.com'],
             'password' => [
                 'required', 
                 'confirmed', 
-                Rules\Password::min(8)
-                    ->mixedCase()
-                    ->numbers()
-                    ->symbols(), 
+                Rules\Password::min(8)->mixedCase()->numbers()->symbols(), 
             ],
-
-        ], [
-            'nim.required' => 'Kolom Nomor Induk Mahasiswa (NIM) wajib diisi.',
+        
+        ], [ 
+            'nim.required' => 'Nomor Induk Mahasiswa (NIM) wajib diisi.',
             'nim.integer' => 'Nomor Induk Mahasiswa (NIM) harus berupa angka.',
-            'nim.digits_between' => 'Nomor Induk Mahasiswa (NIM) harus berupa angka antara :min dan :max digit.',
+            'nim.digits' => 'Nomor Induk Mahasiswa (NIM) harus berupa angka 11 digit.',
             'nim.unique' => 'Nomor Induk Mahasiswa (NIM) ini sudah terdaftar.',
-            'name.required' => 'Kolom Nama Lengkap wajib diisi.',
-            'fakultas.required' => 'Kolom Fakultas wajib diisi.',
-            'prodi.required' => 'Kolom Program Studi wajib diisi.',
-            'email.required' => 'Kolom Email wajib diisi.',
+            'name.required' => 'Nama Lengkap wajib diisi.',
+            'fakultas.required' => 'Fakultas wajib dipilih.',
+            'prodi.required' => 'Program Studi wajib dipilih.',
+            'email.required' => 'Email wajib diisi.',
             'email.unique' => 'Email ini sudah terdaftar.',
-            'email.ends_with' => 'Email yang digunakan harus menggunakan domain UMY (contoh: user@mail.umy.ac.id).',
             'password.min' => 'Kata sandi minimal harus :min karakter.',
-            'password.mixed' => 'Kata sandi harus mengandung minimal satu huruf kapital dan satu huruf kecil.',
+            'password.mixed_case' => 'Kata sandi harus mengandung minimal satu huruf kapital dan satu huruf kecil.',
             'password.numbers' => 'Kata sandi harus mengandung minimal satu angka.',
             'password.symbols' => 'Kata sandi harus mengandung minimal satu karakter khusus.',
             'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
-            'password.required' => 'Kolom kata sandi wajib diisi.',
-
-
+            'password.required' => 'Kata sandi wajib diisi.',
+            'nim.regex' => 'Nomor Induk Mahasiswa (NIM) harus berupa angka.', 
         ]);
 
         $user = User::create([
@@ -76,8 +71,7 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('login')
+            ->with('status', 'Registrasi berhasil! Silakan cek email anda untuk verifikasi akun.');
     }
 }

@@ -115,4 +115,52 @@
         Jadwal ditampilkan hingga <strong>7 hari ke depan.</strong> Harap periksa jadwal sebelum melakukan booking.
     </div>
 </div>
+    @if(session('email_unverified'))
+    <div id="emailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-96 text-center shadow-lg">
+            <h3 class="text-lg font-bold mb-4">Verifikasi Email</h3>
+            <p class="mb-6">Harap verifikasi email Anda terlebih dahulu sebelum melakukan booking lapangan.</p>
+            
+            <div class="flex justify-center space-x-2">
+                <button id="resendEmailBtn" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    Kirim Ulang Email Verifikasi
+                </button>
+                <button onclick="document.getElementById('emailModal').remove();" 
+                    class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                    Tutup
+                </button>
+            </div>
+
+            <div id="resendMessage" class="mt-4 text-sm text-green-600 hidden"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById('resendEmailBtn').addEventListener('click', function() {
+            const btn = this;
+            const msgDiv = document.getElementById('resendMessage');
+            btn.disabled = true;
+            btn.textContent = 'Mengirim...';
+
+            axios.post('{{ route('verification.send') }}', {}, {
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => {
+                msgDiv.textContent = 'Link verifikasi telah dikirim ulang!';
+                msgDiv.classList.remove('hidden');
+                btn.textContent = 'Kirim Ulang Email Verifikasi';
+                btn.disabled = false;
+            })
+            .catch(error => {
+                msgDiv.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+                msgDiv.classList.remove('hidden');
+                btn.textContent = 'Kirim Ulang Email Verifikasi';
+                btn.disabled = false;
+            });
+        });
+    </script>
+    @endif
 @endsection

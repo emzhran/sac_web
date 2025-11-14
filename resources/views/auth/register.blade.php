@@ -9,7 +9,7 @@
             <h2 class="text-4xl font-bold text-gray-800 mb-4">Registrasi Akun</h2>
             <p class="text-lg text-gray-500 mb-8">Isi data Anda untuk membuat akun baru</p>
 
-            <form method="POST" action="{{ route('register') }}">
+            <form method="POST" action="{{ route('register') }}" novalidate>
                 @csrf
 
                 <div class="mb-4">
@@ -67,8 +67,7 @@
                 <div class="mb-4">
                     <x-input-label for="email" :value="__('Email')" />
                     <x-text-input id="email" class="block mt-2 w-full" type="email" name="email" :value="old('email')" required autocomplete="username"
-                        placeholder="user@mail.umy.ac.id" />
-                    <p class="mt-1 text-xs text-yellow-600">Pastikan menggunakan Email UMY (contoh: user@mail.umy.ac.id)</p>
+                        placeholder="user@gmail.com" />
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
 

@@ -2,28 +2,52 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\BookingController; 
-use App\Http\Controllers\LapanganController; 
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\LapanganController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\AdminDashboardController;
-use App\Http\Controllers\AdminBookingController; 
+use App\Http\Controllers\AdminBookingController;
+use App\Http\Controllers\DashboardController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+
+Auth::routes(['verify' => true]);
 
 Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
 
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/home')->with('success', 'Email kamu berhasil diverifikasi!');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Link verifikasi sudah dikirim ulang!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
+
+
 
 Route::middleware('auth')->group(function () {
-    
+
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         Route::resource('lapangan', LapanganController::class)->except(['show']);
-        
+
         Route::prefix('booking')->name('booking.')->group(function () {
-             Route::get('/', [AdminBookingController::class, 'index'])->name('index'); 
-             Route::patch('/{booking}/status/{status}', [AdminBookingController::class, 'updateStatus'])->name('update_status'); 
+            Route::get('/', [AdminBookingController::class, 'index'])->name('index');
+            Route::patch('/{booking}/status/{status}', [AdminBookingController::class, 'updateStatus'])->name('update_status');
         });
 
         Route::get('/jadwal', [JadwalController::class, 'adminIndex'])->name('jadwal.index');
@@ -42,13 +66,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/booking', [BookingController::class, 'index'])->name('booking.index'); 
+    Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
 
     Route::get('/booking/{lapangan:id}/create', [BookingController::class, 'create'])->name('booking.create');
     Route::post('/booking/{lapangan:id}/store', [BookingController::class, 'store'])->name('booking.store');
 
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
-
 });
 
 require __DIR__ . '/auth.php';

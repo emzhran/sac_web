@@ -49,6 +49,11 @@ class BookingController extends Controller
 
     public function create(Request $request, Lapangan $lapangan)
     {
+        if (!Auth::user()->hasVerifiedEmail()) {
+            return redirect()->route('booking.index', ['lapangan' => $lapangan->nama])
+                ->with('email_unverified', true);
+        }
+
         $request->validate([
             'tanggal' => 'required|date|after_or_equal:today',
             'jam_mulai' => 'required|date_format:H:i',
@@ -62,7 +67,8 @@ class BookingController extends Controller
         $isConflict = $this->checkConflict($lapangan->id, $tanggal, $jam_mulai, $jam_selesai);
         
         if ($isConflict) {
-            return redirect()->route('booking.index', ['lapangan' => $lapangan->nama])->with('error', 'Slot jam yang Anda pilih sudah terisi. Silakan pilih slot lain.');
+            return redirect()->route('booking.index', ['lapangan' => $lapangan->nama])
+                ->with('error', 'Jam yang Anda pilih sudah terisi. Silahkan pilih jam lain.');
         }
 
         return view('booking.create', compact('lapangan', 'tanggal', 'jam_mulai', 'jam_selesai'));
@@ -70,6 +76,12 @@ class BookingController extends Controller
 
     public function store(Request $request, Lapangan $lapangan)
     {
+
+        if (!Auth::user()->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Harap verifikasi email anda terlebih dahulu.'
+            ], 403);
+        }
         try {
             $validated = $request->validate([
                 'tanggal_booking' => 'required|date|after_or_equal:today', 

@@ -10,6 +10,11 @@
         <div class="w-1/2 p-12">
             <h2 class="text-4xl font-bold text-gray-800 mb-4">Masuk</h2>
             <p class="text-lg text-gray-500 mb-8">Masukkan email dan password Anda</p>
+            @if (session('status'))
+                <div class="mb-4 px-4 py-3 rounded-lg bg-pink-50 border border-pink-200 text-pink-700 text-sm font-medium">
+                    {{ session('status') }}
+                </div>
+            @endif
 
             <!-- Login Form -->
             <form method="POST" action="{{ route('login') }}">

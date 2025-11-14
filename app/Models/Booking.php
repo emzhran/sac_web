@@ -20,7 +20,7 @@ class Booking extends Model
         return $this->belongsTo(Lapangan::class);
     }
 
-    public function jadwal()
+    public function jadwals()
     {
         return $this->hasOne(Jadwal::class);
     }
