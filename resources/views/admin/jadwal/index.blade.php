@@ -12,17 +12,20 @@
     <h3 class="text-2xl font-bold mb-6 text-gray-800">Jadwal Lapangan 7 Hari ke Depan</h3>
 
     <div class="flex space-x-3 mb-6">
-        @php 
-            $filterNames = ['Futsal', 'Badminton', 'Voli', 'Basket'];
-            $currentFilterKey = strstr($lapanganFilterName, ' ', true) ?: $lapanganFilterName; 
+        @php
+            $allLapangans = \App\Models\Lapangan::select('nama')
+                ->get()
+                ->map(fn($lap) => explode(' ', trim($lap->nama))[0]) 
+                ->unique()
+                ->values();
+
+            $currentFilterBase = explode(' ', $lapanganFilterName)[0];
         @endphp
 
-        @foreach ($filterNames as $lap)
-            <a href="{{ route('admin.jadwal.index', ['lapangan' => $lap]) }}"
-               class="px-4 py-2 rounded-lg text-sm font-semibold border 
-                      {{ $currentFilterKey == $lap 
-                          ? 'bg-blue-500 text-white border-blue-500' 
-                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100' }}">
+        @foreach ($allLapangans as $lap)
+            <a href="{{ route('booking.index', ['lapangan' => $lap]) }}"
+               class="px-4 py-2 rounded-lg text-sm font-semibold border transition
+                      {{ $currentFilterBase == $lap ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100' }}">
                 {{ $lap }}
             </a>
         @endforeach

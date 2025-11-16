@@ -9,6 +9,7 @@ use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminBookingController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KelolaPenggunaController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
@@ -42,22 +43,27 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-
+    
         Route::resource('lapangan', LapanganController::class)->except(['show']);
-
+    
         Route::prefix('booking')->name('booking.')->group(function () {
             Route::get('/', [AdminBookingController::class, 'index'])->name('index');
             Route::patch('/{booking}/status/{status}', [AdminBookingController::class, 'updateStatus'])->name('update_status');
         });
-
+    
         Route::get('/jadwal', [JadwalController::class, 'adminIndex'])->name('jadwal.index');
+        
         Route::get('/riwayat', [RiwayatController::class, 'adminIndex'])->name('riwayat.index');
-
+        Route::patch('/riwayat/{id}/status', [RiwayatController::class, 'updateStatus'])->name('riwayat.updateStatus');
+        Route::delete('/riwayat/{id}', [RiwayatController::class, 'destroy'])->name('riwayat.destroy');
+    
         Route::get('/users', function () {
             return view('admin.users.index');
         })->name('users.index');
-    });
 
+        Route::get('/kelolapengguna', [KelolaPenggunaController::class, 'index'])->name('kelolapengguna.index');
+    });
+    
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');

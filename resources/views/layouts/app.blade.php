@@ -7,7 +7,7 @@
 
         <title>{{ config('app.name', 'Student Activity Center') }}</title>
 
-        <link rel="icon" type="image/png" href="{{ asset('asset/images/logo-umy-sac-transparan-01.png') }}">
+        <link rel="icon" type="image/png" href="{{ asset('asset/images/logosac.png') }}">
         
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -15,8 +15,9 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-gray-100">
-        <div class="flex min-h-screen">
+    
+    <body class="font-sans antialiased bg-gray-100" x-data="{ sidebarOpen: true }">
+        <div class="min-h-screen bg-gray-100">
 
             @if (Auth::check() && Auth::user()->role === 'admin')
                 @include('layouts.sidebar-admin')
@@ -24,8 +25,13 @@
                 @include('layouts.sidebar')
             @endif
 
-            <div class="flex-1 ml-64">
+            <div class="fixed top-0 left-0 right-0 z-40 transition-all duration-300 ease-in-out"
+                :class="sidebarOpen ? 'ml-64' : 'ml-20'">
                 @include('layouts.navigation')
+            </div>
+
+            <div class="transition-all duration-300 ease-in-out pt-16" 
+                :class="sidebarOpen ? 'ml-64' : 'ml-20'">
 
                 @isset($header)
                     <header class="bg-white shadow">
@@ -41,7 +47,6 @@
                 </main>
             </div>
         </div>
-        
         @stack('scripts')
 
     </body>

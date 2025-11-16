@@ -9,6 +9,25 @@ export default {
         './resources/views/**/*.blade.php',
     ],
 
+    // [MODIFIKASI] Tambahkan safelist di sini
+    safelist: [
+        'bg-blue-500',
+        'text-blue-600',
+        'bg-red-500',
+        'text-red-600',
+        'bg-green-500',
+        'text-green-600',
+        'bg-yellow-500',
+        'text-yellow-600',
+        'bg-indigo-500',
+        'text-indigo-600',
+        'bg-purple-500',
+        'text-purple-600',
+        'bg-pink-500',
+        'text-pink-600',
+        // Tambahkan warna lain di sini jika Anda menggunakannya secara dinamis
+    ],
+
     theme: {
         extend: {
             fontFamily: {

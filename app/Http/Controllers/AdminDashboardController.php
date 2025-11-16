@@ -20,14 +20,17 @@ class AdminDashboardController extends Controller
         $startOfMonthTime = now()->startOfMonth();
         $endOfMonthTime = now()->endOfMonth();
         $totalBookings = Booking::where('status', $successStatus)
-            ->whereBetween('created_at', [$startOfMonthTime, $endOfMonthTime])
+        ->whereBetween('updated_at', [$startOfMonthTime, $endOfMonthTime])
+
             ->count();
         $pendingBookings = Booking::where('status', $pendingStatus)
-            ->whereBetween('created_at', [$startOfMonthTime, $endOfMonthTime])
+        ->whereBetween('updated_at', [$startOfMonthTime, $endOfMonthTime])
+
             ->count();
         $usageStats = Booking::select('lapangan_id', DB::raw('COUNT(*) as bookings_count'))
             ->where('status', $successStatus)
-            ->whereBetween('created_at', [$startOfMonthTime, $endOfMonthTime])
+            ->whereBetween('updated_at', [$startOfMonthTime, $endOfMonthTime])
+
             ->groupBy('lapangan_id')
             ->get();
         
@@ -39,6 +42,9 @@ class AdminDashboardController extends Controller
         $colors = ['red', 'yellow', 'green', 'purple', 'indigo', 'pink'];
         $colorIndex = 0;
 
+        $totalUsage = $usageStats->sum('bookings_count');
+        if ($totalUsage == 0) $totalUsage = 1;
+
         foreach ($lapangans as $lapangan) {
             $count = $usageStats->where('lapangan_id', $lapangan->id)->first()->bookings_count ?? 0;
             
@@ -47,8 +53,10 @@ class AdminDashboardController extends Controller
             $fieldDetails[] = [
                 'name' => $displayName,
                 'bookings' => $count,
+                'percentage' => round(($count / $totalUsage) * 100, 1), // ← tambahan
                 'color' => $colors[$colorIndex % count($colors)],
             ];
+            
             $colorIndex++;
             
             if ($count > $maxBookings) {
@@ -56,6 +64,7 @@ class AdminDashboardController extends Controller
                 $mostUsedField = $displayName;
             }
         }
+        
         
         $facultyUsageRaw = Booking::select('users.fakultas', DB::raw('COUNT(bookings.id) as bookings'))
             ->join('users', 'bookings.nama_pemesan', '=', 'users.name') 

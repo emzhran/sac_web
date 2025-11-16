@@ -24,4 +24,8 @@ class Booking extends Model
     {
         return $this->hasOne(Jadwal::class);
     }
+    public function jadwal()
+    {
+        return $this->hasOne(Jadwal::class);
+    }
 }
