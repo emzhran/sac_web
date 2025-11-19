@@ -39,26 +39,36 @@ class JadwalController extends Controller
 
     public function adminIndex(Request $request)
     {
-        $lapanganFilterName = $request->query('lapangan', 'Futsal'); 
+        $allLapangans = \App\Models\Lapangan::orderBy('nama', 'asc')->get();
+        $defaultLap = $allLapangans->first(); 
+        $defaultLapName = $defaultLap ? $defaultLap->nama : 'Lapangan Default (Tidak Ada)';
+        $lapanganFilterName = $request->query('lapangan', $defaultLapName);
+        $lapangan = $allLapangans->firstWhere('nama', $lapanganFilterName);
+        if (!$lapangan) {
+            $lapangan = $allLapangans->filter(fn($lap) => str_starts_with($lap->nama, $lapanganFilterName))->first();
+        }
+        if (!$lapangan) {
+            $lapangan = $defaultLap;
+        }
+        if ($lapangan) {
+            $lapanganFilterName = $lapangan->nama;
+        }
         
         $dates = $this->generateDateRange(7);
         $start = Carbon::today()->toDateString();
         $end = Carbon::today()->addDays(6)->toDateString();
-        
-        $lapangan = Lapangan::where('nama', 'LIKE', $lapanganFilterName . '%')->first();
-
         $allBookings = [];
 
         if ($lapangan) {
-            $lapanganFilterName = $lapangan->nama; 
             $allBookings[$lapanganFilterName] = $this->fetchBookings($lapangan, $start, $end);
         } else {
-             $lapanganFilterName = 'Futsal Lapangan A';
+            $lapanganFilterName = 'Tidak Ada Lapangan Ditemukan';
         }
         
         $timeSlots = $this->generateTimeSlots(7, 22);
 
-        return view('admin.jadwal.index', compact('dates', 'timeSlots', 'allBookings', 'lapanganFilterName'));
+        // Kirim $allLapangans agar navigasi Blade berfungsi
+        return view('admin.jadwal.index', compact('dates', 'timeSlots', 'allBookings', 'lapanganFilterName', 'allLapangans'));
     }
 
 

@@ -13,20 +13,22 @@
 
     <div class="flex space-x-3 mb-6">
         @php
-            $allLapangans = \App\Models\Lapangan::select('nama')
-                ->get()
-                ->map(fn($lap) => explode(' ', trim($lap->nama))[0]) 
-                ->unique()
-                ->values();
-
+            $allLapangans = $allLapangans ?? \App\Models\Lapangan::all(); 
+            $lapanganGroups = $allLapangans->groupBy(fn($lap) => explode(' ', $lap->nama)[0]);
             $currentFilterBase = explode(' ', $lapanganFilterName)[0];
         @endphp
 
-        @foreach ($allLapangans as $lap)
-            <a href="{{ route('booking.index', ['lapangan' => $lap]) }}"
-               class="px-4 py-2 rounded-lg text-sm font-semibold border transition
-                      {{ $currentFilterBase == $lap ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100' }}">
-                {{ $lap }}
+        @foreach ($lapanganGroups as $lapTypeName => $lapList)
+            @php
+                $targetLapName = $lapList->first()->nama; 
+                
+                $isActive = $currentFilterBase == $lapTypeName;
+            @endphp
+
+            <a href="{{ route('admin.jadwal.index', ['lapangan' => $targetLapName]) }}"
+            class="px-4 py-2 rounded-lg text-sm font-semibold border transition
+                    {{ $isActive ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100' }}">
+                {{ $lapTypeName }}
             </a>
         @endforeach
     </div>

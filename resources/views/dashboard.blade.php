@@ -8,6 +8,11 @@
 
 @section('content')
 <main class="flex-1 p-6">
+    @if (session('error'))
+        <div class="bg-red-500 text-white p-3 rounded mb-4">
+            {{ session('error') }}
+        </div>
+    @endif
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div class="bg-white shadow-md p-16 rounded-lg">
             <h3 class="text-2xl font-bold text-blue-800">Lapangan Futsal</h3>

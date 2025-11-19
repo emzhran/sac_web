@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('page_title', 'Dashboard Admin')
+
 @section('header')
 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
     Dashboard Admin
@@ -7,24 +9,24 @@
 @endsection
 
 @section('content')
-<main class="flex-1 p-6">
+<div class="flex-1 p-12">
     <h1 class="text-3xl font-bold text-gray-800 mb-8">Analisis Penggunaan Lapangan Bulanan</h1>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         
-        <div class="bg-blue-500 text-white shadow-lg p-5 rounded-xl transition duration-300 transform hover:scale-[1.02]">
+        <div class="bg-blue-500 text-white shadow-lg p-5 rounded-xl">
             <p class="text-sm opacity-80">Total Booking Bulan Ini</p>
             <p class="text-4xl font-bold mt-1">{{ $totalBookings ?? 0 }}</p>
             <p class="text-xs mt-2 opacity-90">Total pemakaian lapangan</p>
         </div>
 
-        <div class="bg-white shadow-lg p-5 rounded-xl border-l-4 border-red-500 transition duration-300 transform hover:scale-[1.02]">
+        <div class="bg-white shadow-lg p-5 rounded-xl border-l-4 border-red-500">
             <p class="text-sm text-gray-500">Paling Banyak Digunakan</p>
             <p class="text-xl font-bold text-gray-900 mt-1">{{ $mostUsedField ?? 'N/A' }}</p> 
             <p class="text-xs mt-2 text-gray-500">Bulan {{ date('F Y') }}</p>
         </div>
         
-        <div class="bg-white shadow-lg p-5 rounded-xl border-l-4 border-yellow-500 transition duration-300 transform hover:scale-[1.02]">
+        <div class="bg-white shadow-lg p-5 rounded-xl border-l-4 border-yellow-500">
             <p class="text-sm text-gray-500">Booking Pending</p>
             <p class="text-4xl font-bold text-gray-900 mt-1">{{ $pendingBookings ?? 0 }}</p> 
             <p class="text-xs mt-2 text-gray-500">Perlu konfirmasi</p>
@@ -87,8 +89,11 @@
             <p class="text-gray-500">Belum ada data pemesanan yang disetujui bulan ini.</p>
         @endif
     </div>
-</main>
+</div>
+@endsection
 
+
+@push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
@@ -96,8 +101,10 @@ document.addEventListener("DOMContentLoaded", function () {
     
     const ctx = document.getElementById('donutChart').getContext('2d');
 
-    const labels = @json(array_column($fieldDetails, 'name'));
-    const data = @json(array_column($fieldDetails, 'percentage'));
+    const fieldDetails = @json($fieldDetails ?? []);
+
+    const labels = fieldDetails.map(item => item.name);
+    const data = fieldDetails.map(item => item.percentage);
 
     const colors = [
         '#ef4444', 
@@ -129,5 +136,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
-
-@endsection
+@endpush

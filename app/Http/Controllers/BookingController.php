@@ -76,67 +76,49 @@ class BookingController extends Controller
 
     public function store(Request $request, Lapangan $lapangan)
     {
-
         if (!Auth::user()->hasVerifiedEmail()) {
-            return response()->json([
-                'message' => 'Harap verifikasi email anda terlebih dahulu.'
-            ], 403);
+            return back()->with('error', 'Harap verifikasi email Anda terlebih dahulu.');
         }
-        try {
-            $validated = $request->validate([
-                'tanggal_booking' => 'required|date|after_or_equal:today', 
-                'jam_mulai' => 'required|date_format:H:i|before:jam_selesai',
-                'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
-            ]);
 
-            $menitMulai = (int)substr($validated['jam_mulai'], 3, 2);
-            $menitSelesai = (int)substr($validated['jam_selesai'], 3, 2);
-            if ($menitMulai !== 0 || $menitSelesai !== 0) {
-                throw ValidationException::withMessages([
-                    'jam_mulai' => ['Jam harus diakhiri dengan menit 00 (contoh: 10:00).'],
-                ]);
-            }
+        $request->validate([
+            'tanggal' => 'required|date|after_or_equal:today',
+            'jam_mulai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i',
+        ]);
 
-            $tanggal = $validated['tanggal_booking']; 
-            $lapanganId = $lapangan->id;
-            
-            $isConflict = $this->checkConflict($lapanganId, $tanggal, $validated['jam_mulai'], $validated['jam_selesai']);
+        $tanggal = $request->tanggal;
+        $jamMulai = $request->jam_mulai;
+        $jamSelesai = $request->jam_selesai;
 
-            if ($isConflict) {
-                return response()->json([
-                    'message' => 'Tidak dapat membooking lapangan ' . $lapangan->nama . ' karena sudah dibooking pada jam tersebut.',
-                ], 409);
-            }
+        $isConflict = $this->checkConflict(
+            $lapangan->id,
+            $tanggal,
+            $jamMulai,
+            $jamSelesai
+        );
 
-            $booking = Booking::create([
-                'lapangan_id' => $lapanganId,
-                'user_id' => Auth::id(),
-                'nama_pemesan' => Auth::user()->name,
-                'status' => 'pending',
-            ]);
-
-            $booking->jadwals()->create([
-                'tanggal' => $tanggal,
-                'jam_mulai' => $validated['jam_mulai'],
-                'jam_selesai' => $validated['jam_selesai'],
-            ]);
-
-            return response()->json([
-                'message' => 'Pemesanan lapangan ' . $lapangan->nama . ' berhasil diajukan!'
-            ], 200);
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'message' => 'Validasi gagal',
-                'errors' => $e->errors(),
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Terjadi kesalahan sistem saat memproses pemesanan.',
-                'error' => $e->getMessage()
-            ], 500);
+        if ($isConflict) {
+            return back()->with('error', 'Jam yang Anda pilih sudah terisi.');
         }
+
+        $booking = Booking::create([
+            'lapangan_id' => $lapangan->id,
+            'user_id' => Auth::id(),
+            'nama_pemesan' => Auth::user()->name,
+            'status' => 'pending',
+    ]);
+
+        $booking->jadwals()->create([
+            'tanggal' => $tanggal,
+            'jam_mulai' => $jamMulai,
+            'jam_selesai' => $jamSelesai,
+        ]);
+
+        return redirect()
+            ->route('booking.index')
+            ->with('success', 'Pemesanan berhasil diajukan!');
     }
+
 
     protected function fetchBookings(Lapangan $lapangan, $start, $end)
     {

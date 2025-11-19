@@ -9,7 +9,7 @@
 @endsection
 
 @section('content')
-<div class="bg-white p-6 rounded-lg shadow">
+<div class="bg-white p-16 rounded-lg shadow mt-8">
     <h3 class="text-2xl font-bold mb-6 text-gray-800">Daftar Permintaan {{ ucfirst($status ?? 'pending') }}</h3>
 
     @if (session('status'))
@@ -116,7 +116,6 @@
             </table>
         </div>
         
-        {{-- Pagination --}}
         <div class="mt-4">
             {{ $bookings->links() }}
         </div>
