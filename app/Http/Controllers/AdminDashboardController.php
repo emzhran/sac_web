@@ -6,31 +6,49 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Lapangan; 
 use App\Models\Booking; 
-use App\Models\Jadwal;   
+use App\Models\Jadwal;     
 use Carbon\Carbon;
 
 class AdminDashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $availableMonths = [];
+        for ($i = 0; $i < 12; $i++) {
+            $dateOption = now()->startOfMonth()->subMonths($i);
+            $key = $dateOption->format('Y-m'); 
+            $label = $dateOption->translatedFormat('F Y'); 
+            $availableMonths[$key] = $label;
+        }
+
+        $filterDate = $request->input('month', now()->format('Y-m'));
+        
+        try {
+            $date = Carbon::createFromFormat('Y-m', $filterDate);
+        } catch (\Exception $e) {
+            $date = now();
+            $filterDate = $date->format('Y-m');
+        }
+        
+        $monthName = $date->translatedFormat('F Y'); 
+
+        $startOfMonthTime = $date->copy()->startOfMonth();
+        $endOfMonthTime = $date->copy()->endOfMonth();
+
         $successStatus = 'approved';
         $pendingStatus = 'pending';
-        $startOfMonth = now()->startOfMonth()->toDateString();
-        $endOfMonth = now()->endOfMonth()->toDateString();
-        $startOfMonthTime = now()->startOfMonth();
-        $endOfMonthTime = now()->endOfMonth();
+
         $totalBookings = Booking::where('status', $successStatus)
-        ->whereBetween('updated_at', [$startOfMonthTime, $endOfMonthTime])
-
+            ->whereBetween('updated_at', [$startOfMonthTime, $endOfMonthTime])
             ->count();
+
         $pendingBookings = Booking::where('status', $pendingStatus)
-        ->whereBetween('updated_at', [$startOfMonthTime, $endOfMonthTime])
-
+            ->whereBetween('updated_at', [$startOfMonthTime, $endOfMonthTime])
             ->count();
+
         $usageStats = Booking::select('lapangan_id', DB::raw('COUNT(*) as bookings_count'))
             ->where('status', $successStatus)
             ->whereBetween('updated_at', [$startOfMonthTime, $endOfMonthTime])
-
             ->groupBy('lapangan_id')
             ->get();
         
@@ -43,7 +61,7 @@ class AdminDashboardController extends Controller
         $colorIndex = 0;
 
         $totalUsage = $usageStats->sum('bookings_count');
-        if ($totalUsage == 0) $totalUsage = 1;
+        if ($totalUsage == 0) $totalUsage = 1; 
 
         foreach ($lapangans as $lapangan) {
             $count = $usageStats->where('lapangan_id', $lapangan->id)->first()->bookings_count ?? 0;
@@ -53,7 +71,7 @@ class AdminDashboardController extends Controller
             $fieldDetails[] = [
                 'name' => $displayName,
                 'bookings' => $count,
-                'percentage' => round(($count / $totalUsage) * 100, 1), // ← tambahan
+                'percentage' => round(($count / $totalUsage) * 100, 1),
                 'color' => $colors[$colorIndex % count($colors)],
             ];
             
@@ -65,11 +83,10 @@ class AdminDashboardController extends Controller
             }
         }
         
-        
         $facultyUsageRaw = Booking::select('users.fakultas', DB::raw('COUNT(bookings.id) as bookings'))
             ->join('users', 'bookings.nama_pemesan', '=', 'users.name') 
             ->where('bookings.status', $successStatus)
-            ->whereBetween('bookings.created_at', [$startOfMonthTime, $endOfMonthTime])
+            ->whereBetween('bookings.created_at', [$startOfMonthTime, $endOfMonthTime]) 
             ->whereNotNull('users.fakultas')
             ->groupBy('users.fakultas')
             ->get();
@@ -97,7 +114,10 @@ class AdminDashboardController extends Controller
             'pendingBookings',
             'mostUsedField',
             'fieldDetails',
-            'facultyUsage'
+            'facultyUsage',
+            'monthName',      
+            'filterDate',     
+            'availableMonths' 
         ));
     }
 }
