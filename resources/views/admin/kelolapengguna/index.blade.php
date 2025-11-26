@@ -13,10 +13,10 @@
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-2xl font-bold text-gray-800">Daftar Pengguna Terdaftar</h3>
 
-            <a href="{{ route('register') }}"
+            <!-- <a href="{{ route('register') }}"
                class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-md transition shadow-md">
                 + Tambah Pengguna
-            </a>
+            </a> -->
         </div>
 
         @if (session('success'))

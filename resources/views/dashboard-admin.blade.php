@@ -40,19 +40,19 @@
         <div class="bg-blue-500 text-white shadow-lg p-5 rounded-xl">
             <p class="text-sm opacity-80">Total Booking {{ $monthName }}</p>
             <p class="text-4xl font-bold mt-1">{{ $totalBookings ?? 0 }}</p>
-            <p class="text-xs mt-2 opacity-90">Total pemakaian lapangan disetujui</p>
+            <!-- <p class="text-xs mt-2 opacity-90">Total pemakaian lapangan disetujui</p> -->
         </div>
 
         <div class="bg-white shadow-lg p-5 rounded-xl border-l-4 border-red-500">
             <p class="text-sm text-gray-500">Paling Banyak Digunakan</p>
             <p class="text-xl font-bold text-gray-900 mt-1">{{ $mostUsedField ?? 'N/A' }}</p> 
-            <p class="text-xs mt-2 opacity-90">Berdasarkan Pengguanan terbanyak</p>
+            <p class="text-xs mt-2 opacity-90">Berdasarkan Penggunaan terbanyak</p>
         </div>
         
         <div class="bg-white shadow-lg p-5 rounded-xl border-l-4 border-yellow-500">
             <p class="text-sm text-gray-500">Booking Pending</p>
             <p class="text-4xl font-bold text-gray-900 mt-1">{{ $pendingBookings ?? 0 }}</p> 
-            <p class="text-xs mt-2 text-gray-500">Menunggu konfirmasi bulan ini</p>
+            <!-- <p class="text-xs mt-2 text-gray-500">Menunggu konfirmasi bulan ini</p> -->
         </div>
     </div>
 
@@ -98,22 +98,23 @@
             @else
                 <div class="flex flex-col items-center justify-center h-48 text-gray-400">
                     <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                    <p>Belum ada data pemesanan yang disetujui pada bulan {{ $monthName }}.</p>
+                    <p>Tidak ada data penggunaan lapangan bulan {{ $monthName }}.</p>
                 </div>
             @endif
         </div>
 
         <div class="lg:col-span-1 bg-white shadow-lg rounded-xl p-6">
             <h3 class="text-xl font-semibold text-gray-800 mb-4">
-                Penggunaan Fakultas
+                Penggunaan Lapangan Berdasarkan Fakultas Mahasiswa
             </h3>
             
             <ul class="divide-y divide-gray-200">
                 @forelse ($facultyUsage as $faculty)
                     <li class="flex justify-between items-center py-3">
                         <span class="text-gray-700">{{ $faculty['name'] }}</span>
-                        <span class="px-3 py-1 text-sm font-bold rounded-full bg-blue-100 text-blue-800">
-                            {{ $faculty['bookings'] }} Booking
+                        <span class="inline-flex items-center gap-2 px-6 py-2 text-sm font-bold rounded-full bg-blue-100 text-blue-800">
+                            <span>{{ $faculty['bookings'] }}</span>
+                            <span>Booking</span>
                         </span>
                     </li>
                 @empty
