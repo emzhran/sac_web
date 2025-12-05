@@ -1,29 +1,36 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg"> 
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
+@section('page_title', 'Profil Saya')
+
+@section('content')
+<div class="flex-1 p-8 bg-gray-50 min-h-screen">
+    
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-1">
+            Pengaturan Akun
+        </h1>
+        <p class="text-sm text-gray-500">Kelola informasi profil dan keamanan akun Anda.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2 space-y-8">
+            <div class="bg-white shadow-lg shadow-indigo-500/10 rounded-2xl border border-gray-100 p-8">
+                @include('profile.partials.update-profile-information-form')
+            </div>
+        </div>
+
+        <div class="space-y-8">
+            <div class="bg-white shadow-lg shadow-indigo-500/10 rounded-2xl border border-gray-100 p-8">
+                @include('profile.partials.update-password-form')
             </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
-
-            <!-- <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
-            </div> -->
+            {{-- 
+            <div class="bg-red-50 shadow-lg shadow-red-500/10 rounded-2xl border border-red-100 p-8">
+                @include('profile.partials.delete-user-form')
+            </div> 
+            --}}
         </div>
     </div>
-</x-app-layout>
+</div>
+@endsection

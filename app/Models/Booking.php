@@ -22,10 +22,10 @@ class Booking extends Model
 
     public function jadwals()
     {
-        return $this->hasOne(Jadwal::class);
+        return $this->hasMany(Jadwal::class);
     }
     public function jadwal()
     {
-        return $this->hasOne(Jadwal::class);
+        return $this->hasMany(Jadwal::class);
     }
 }

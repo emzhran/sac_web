@@ -1,188 +1,280 @@
-<x-guest-layout class="bg-gray-100 min-h-screen flex items-center justify-end px-10">
-    <div class="relative flex w-full max-w-7xl bg-white rounded-xl shadow-lg overflow-hidden">
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
-        <div class="w-1/2 bg-pink-100 flex items-center justify-center">
-            <img src="{{ asset('asset/images/logo-umy-sac-transparan-01.png') }}" alt="Logo" class="w-80 h-auto">
-        </div>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <div class="w-1/2 p-12">
-            <h2 class="text-4xl font-bold text-gray-800 mb-4">Registrasi Akun</h2>
-            <p class="text-lg text-gray-500 mb-8">Isi data Anda untuk membuat akun baru</p>
+    <title>Register - Student Activity Center</title>
 
-            <form method="POST" action="{{ route('register') }}" novalidate>
-                @csrf
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-                <div class="mb-4">
-                    <x-input-label for="name" :value="__('Nama Lengkap')" />
-                    <x-text-input id="name" class="block mt-2 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-                    <x-input-error :messages="$errors->get('name')" class="mt-2" />
+    <style>
+        /* Hilangkan ikon mata bawaan browser Edge/IE agar tidak double */
+        input::-ms-reveal,
+        input::-ms-clear {
+            display: none;
+        }
+    </style>
+    
+</head>
+
+<body class="antialiased bg-white">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+
+        <div
+            class="bg-purple-500 text-white p-8 md:p-12 md:w-1/2 relative overflow-hidden flex flex-col justify-between">
+
+            <div class="z-10 relative">
+                <div class="mb-6 bg-white/20 w-fit p-2 rounded-lg backdrop-blur-sm">
+                    <img src="{{ asset('asset/images/logo-umy-sac-transparan-01.png') }}" alt="Logo"
+                        class="h-12 w-auto">
                 </div>
 
-                <div class="mb-4">
-                    <x-input-label for="nim" :value="__('NIM (Nomor Induk Mahasiswa)')" />
-                    <x-text-input
-                        id="nim"
-                        class="block mt-2 w-full"
-                        type="text"
-                        name="nim"
-                        :value="old('nim')"
-                        required
-                        autocomplete="nim"
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        maxlength="11"
-                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-                    <x-input-error :messages="$errors->get('nim')" class="mt-2" />
-                </div>
-
-
-                <div class="mb-4">
-                    <x-input-label for="fakultas" :value="__('Fakultas')" />
-                    <select id="fakultas" name="fakultas" required
-                        class="block mt-2 w-full border-gray-300 focus:border-pink-500 focus:ring-pink-500 rounded-md shadow-sm">
-                        <option value="" disabled selected>Pilih Fakultas</option>
-                        <option value="Teknik" @selected(old('fakultas')=='Teknik' )>Teknik</option>
-                        <option value="Agama Islam" @selected(old('fakultas')=='Agama Islam' )>Agama Islam</option>
-                        <option value="Kedokteran & Ilmu Kesehatan" @selected(old('fakultas')=='Kedokteran & Ilmu Kesehatan' )>Kedokteran & Ilmu Kesehatan</option>
-                        <option value="Kedokteran Gigi" @selected(old('fakultas')=='Kedokteran Gigi' )>Kedokteran Gigi</option>
-                        <option value="Pertanian" @selected(old('fakultas')=='Pertanian' )>Pertanian</option>
-                        <option value="Ilmu Sosial Politik" @selected(old('fakultas')=='Ilmu Sosial Politik' )>Ilmu Sosial Politik</option>
-                        <option value="Ekonomi & Bisnis" @selected(old('fakultas')=='Ekonomi & Bisnis' )>Ekonomi & Bisnis</option>
-                        <option value="Pendidikan Bahasa" @selected(old('fakultas')=='Pendidikan Bahasa' )>Pendidikan Bahasa</option>
-                        <option value="Hukum" @selected(old('fakultas')=='Hukum' )>Hukum</option>
-                        <option value="Psikologi" @selected(old('fakultas')=='Psikologi' )>Psikologi</option>
-                    </select>
-                    <x-input-error :messages="$errors->get('fakultas')" class="mt-2" />
-                </div>
-
-                <div class="mb-4">
-                    <x-input-label for="prodi" :value="__('Program Studi')" />
-                    <select id="prodi" name="prodi" required disabled
-                        class="block mt-2 w-full border-gray-300 focus:border-pink-500 focus:ring-pink-500 rounded-md shadow-sm">
-                        <option value="" disabled selected>Pilih Program Studi</option>
-                    </select>
-                    <x-input-error :messages="$errors->get('prodi')" class="mt-2" />
-                </div>
-
-                <div class="mb-4">
-                    <x-input-label for="email" :value="__('Email')" />
-                    <x-text-input id="email" class="block mt-2 w-full" type="email" name="email" :value="old('email')" required autocomplete="username"
-                        placeholder="user@gmail.com" />
-                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                </div>
-
-                <div class="mb-4">
-                    <x-input-label for="password" :value="__('Password')" />
-                    <x-text-input id="password" class="block mt-2 w-full" type="password" name="password" required autocomplete="new-password" />
-                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                    <p class="mt-1 text-xs text-pink-600">
-                        Minimal panjang password 8 karakter, mengandung:
-                        <span class="font-semibold">Angka, Huruf Kapital, dan Karakter Khusus (@#$%&*)</span>.
+                <div class="mt-10 md:mt-20">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Join Us</h1>
+                    <h2 class="text-2xl md:text-3xl font-semibold mb-6">Create Your Account</h2>
+                    <p class="max-w-md opacity-90 leading-relaxed">
+                        Bergabunglah dengan Student Activity Center. Daftarkan diri Anda untuk mulai meminjam fasilitas
+                        dan mengakses layanan kemahasiswaan.
                     </p>
                 </div>
+            </div>
 
-                <div class="mb-6">
-                    <x-input-label for="password_confirmation" :value="__('Konfirmasi Password')" />
-                    <x-text-input id="password_confirmation" class="block mt-2 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
-                    <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+            <div class="absolute right-0 top-1/3 transform translate-x-1/4 pointer-events-none">
+                <div class="relative w-64 h-64">
+                    <svg class="text-white/20 absolute top-10 left-10 w-16 h-16" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+                    </svg>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <div class="relative w-40 h-40">
+                            <svg class="text-orange-400 w-40 h-40 transform rotate-45"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path
+                                    d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+                                <path
+                                    d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <svg class="text-white/20 absolute bottom-10 left-10 w-24 h-24 pointer-events-none"
+                xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+            </svg>
+        </div>
+
+        <div class="p-8 md:p-12 md:w-1/2 flex items-center justify-center bg-white relative overflow-y-auto">
+            <div class="w-full max-w-lg">
+
+                <div class="absolute top-8 right-8 text-right">
+                    <span class="text-gray-500 text-sm">Sudah punya akun?</span>
+                    <a href="{{ route('login') }}"
+                        class="text-purple-500 font-medium hover:underline text-sm ml-1">Login</a>
                 </div>
 
-                <div class="mt-6">
-                    <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded-md shadow-md text-lg">
-                        {{ __('DAFTAR') }}
-                    </button>
+                <div class="mb-8 mt-8 md:mt-0">
+                    <p class="text-gray-600 mb-2 font-medium">
+                        Welcome to <span class="text-purple-500 font-bold">SAC UMY</span>
+                    </p>
+                    <h1 class="text-4xl font-bold text-gray-900">Registrasi Akun</h1>
                 </div>
 
-                <div class="mt-4 text-center">
-                    <a class="text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500" href="{{ route('login') }}">
-                        Sudah punya akun?
-                        <span class="font-semibold underline text-pink-600">Login Sekarang.</span>
-                    </a>
-                </div>
+                <form method="POST" action="{{ route('register') }}" novalidate class="space-y-5">
+                    @csrf
 
-            </form>
+                    <div>
+                        <x-input-label for="name" :value="__('Nama Lengkap')" class="text-gray-700" />
+                        <x-text-input id="name"
+                            class="block mt-1 w-full h-12 border-gray-300 focus:ring-purple-500 focus:border-purple-500 rounded-md"
+                            type="text" name="name" :value="old('name')" required autofocus autocomplete="name"
+                            placeholder="Nama Kamu" />
+                        <x-input-error :messages="$errors->get('name')" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <x-input-label for="nim" :value="__('NIM')" class="text-gray-700" />
+                        <x-text-input id="nim"
+                            class="block mt-1 w-full h-12 border-gray-300 focus:ring-purple-500 focus:border-purple-500 rounded-md"
+                            type="text" name="nim" :value="old('nim')" required autocomplete="nim" inputmode="numeric"
+                            pattern="[0-9]*" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            placeholder="Nomor Induk Mahasiswa" />
+                        <x-input-error :messages="$errors->get('nim')" class="mt-1" />
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <x-input-label for="fakultas" :value="__('Fakultas')" class="text-gray-700" />
+                            <select id="fakultas" name="fakultas" required
+                                class="block mt-1 w-full h-12 border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-md shadow-sm text-gray-700">
+                                <option value="" disabled selected>Pilih Fakultas</option>
+                                <option value="Teknik" @selected(old('fakultas') == 'Teknik')>Teknik</option>
+                                <option value="Agama Islam" @selected(old('fakultas') == 'Agama Islam')>Agama Islam
+                                </option>
+                                <option value="Kedokteran & Ilmu Kesehatan" @selected(old('fakultas') == 'Kedokteran & Ilmu Kesehatan')>Kedokteran & Ilmu Kesehatan</option>
+                                <option value="Kedokteran Gigi" @selected(old('fakultas') == 'Kedokteran Gigi')>Kedokteran
+                                    Gigi</option>
+                                <option value="Pertanian" @selected(old('fakultas') == 'Pertanian')>Pertanian</option>
+                                <option value="Ilmu Sosial Politik" @selected(old('fakultas') == 'Ilmu Sosial Politik')>
+                                    Ilmu Sosial Politik</option>
+                                <option value="Ekonomi & Bisnis" @selected(old('fakultas') == 'Ekonomi & Bisnis')>Ekonomi
+                                    & Bisnis</option>
+                                <option value="Pendidikan Bahasa" @selected(old('fakultas') == 'Pendidikan Bahasa')>
+                                    Pendidikan Bahasa</option>
+                                <option value="Hukum" @selected(old('fakultas') == 'Hukum')>Hukum</option>
+                                <option value="Psikologi" @selected(old('fakultas') == 'Psikologi')>Psikologi</option>
+                            </select>
+                            <x-input-error :messages="$errors->get('fakultas')" class="mt-1" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="prodi" :value="__('Program Studi')" class="text-gray-700" />
+                            <select id="prodi" name="prodi" required disabled
+                                class="block mt-1 w-full h-12 border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-md shadow-sm text-gray-700 bg-gray-50">
+                                <option value="" disabled selected>Pilih Program Studi</option>
+                            </select>
+                            <x-input-error :messages="$errors->get('prodi')" class="mt-1" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <x-input-label for="email" :value="__('Email')" class="text-gray-700" />
+                        <x-text-input id="email"
+                            class="block mt-1 w-full h-12 border-gray-300 focus:ring-purple-500 focus:border-purple-500 rounded-md"
+                            type="email" name="email" :value="old('email')" required autocomplete="username"
+                            placeholder="user@gmail.com" />
+                        <x-input-error :messages="$errors->get('email')" class="mt-1" />
+                    </div>
+
+                    <div x-data="{ show: false }">
+                        <x-input-label for="password" :value="__('Password')" class="text-gray-700" />
+                        <div class="relative mt-1">
+                            <x-text-input id="password"
+                                class="block w-full h-12 pr-10 border-gray-300 focus:ring-purple-500 focus:border-purple-500 rounded-md transition"
+                                ::type="show ? 'text' : 'password'" name="password" required autocomplete="new-password"
+                                placeholder="Min. 8 Karakter" />
+
+                            <button type="button" @click="show = !show"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-purple-600 focus:outline-none">
+                                <svg x-show="!show" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <svg x-show="show" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                </svg>
+                            </button>
+                        </div>
+                        <x-input-error :messages="$errors->get('password')" class="mt-1" />
+                        <p class="mt-1 text-xs text-gray-500">
+                            Gunakan angka, huruf kapital, dan karakter khusus (@#$%&*).
+                        </p>
+                    </div>
+
+                    <div x-data="{ show: false }">
+                        <x-input-label for="password_confirmation" :value="__('Konfirmasi Password')"
+                            class="text-gray-700" />
+                        <div class="relative mt-1">
+                            <x-text-input id="password_confirmation"
+                                class="block w-full h-12 pr-10 border-gray-300 focus:ring-purple-500 focus:border-purple-500 rounded-md transition"
+                                ::type="show ? 'text' : 'password'" name="password_confirmation" required
+                                autocomplete="new-password" placeholder="Ulangi Password" />
+
+                            <button type="button" @click="show = !show"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-purple-600 focus:outline-none">
+                                <svg x-show="!show" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                <svg x-show="show" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                </svg>
+                            </button>
+                        </div>
+                        <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit"
+                            class="w-full h-12 bg-purple-500 hover:bg-pink-600 text-white font-bold rounded-md transition duration-200 shadow-sm text-lg">
+                            Daftar
+                        </button>
+                    </div>
+
+                </form>
+            </div>
         </div>
     </div>
-</x-guest-layout>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const fakultasSelect = document.getElementById('fakultas');
-        const prodiSelect = document.getElementById('prodi');
-        const oldProdi = "{{ old('prodi') }}";
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fakultasSelect = document.getElementById('fakultas');
+            const prodiSelect = document.getElementById('prodi');
+            const oldProdi = "{{ old('prodi') }}";
 
-        const prodiData = {
-            "Teknik": [
-                "Teknik Sipil", "Teknik Mesin", "Teknik Elektro", "Teknologi Informasi",
-                "Teknologi Elektro-Medis", "Teknologi Rekayasa Otomotif"
-            ],
-            "Agama Islam": [
-                "Komunikasi dan Penyiaran Islam", "Pendidikan Agama Islam", "Ekonomi Syariah"
-            ],
-            "Kedokteran & Ilmu Kesehatan": [
-                "Kedokteran", "Pendidikan Profesi Dokter", "Pendidikan Profesi Ners",
-                "Farmasi", "Apoteker", "Keperawatan"
-            ],
-            "Kedokteran Gigi": [
-                "Kedokteran Gigi", "Profesi Dokter Gigi"
-            ],
-            "Pertanian": [
-                "Agroteknologi", "Agribisnis"
-            ],
-            "Ilmu Sosial Politik": [
-                "Hubungan Internasional", "Ilmu Komunikasi", "Ilmu Pemerintahan",
-                "International Program of International Relations (IPIREL)",
-                "International Program of Government Affairs and Administration (IGOV)",
-                "International Program of Communication Studies (IP-COS)"
-            ],
-            "Ekonomi & Bisnis": [
-                "Manajemen", "Akuntansi", "Ekonomi",
-                "International Program of Management and Business (IMaBs)",
-                "International Program of Accounting (IPAcc)",
-                "International Undergraduate Program for Islamic Economics and Finance (IPIEF)",
-                "Magister Manajemen", "Magister Akuntansi", "Magister Ekonomi", "Doktor Manajemen"
-            ],
-            "Pendidikan Bahasa": [
-                "Pendidikan Bahasa Inggris", "Pendidikan Bahasa Arab", "Pendidikan Bahasa Jepang"
-            ],
-            "Hukum": [
-                "Hukum", "Internasional Ilmu Hukum (IPOLS)"
-            ],
-            "Psikologi": [
-                "Psikologi"
-            ]
-        };
+            const prodiData = {
+                "Teknik": ["Teknik Sipil", "Teknik Mesin", "Teknik Elektro", "Teknologi Informasi", "Teknologi Elektro-Medis", "Teknologi Rekayasa Otomotif"],
+                "Agama Islam": ["Komunikasi dan Penyiaran Islam", "Pendidikan Agama Islam", "Ekonomi Syariah"],
+                "Kedokteran & Ilmu Kesehatan": ["Kedokteran", "Pendidikan Profesi Dokter", "Pendidikan Profesi Ners", "Farmasi", "Apoteker", "Keperawatan"],
+                "Kedokteran Gigi": ["Kedokteran Gigi", "Profesi Dokter Gigi"],
+                "Pertanian": ["Agroteknologi", "Agribisnis"],
+                "Ilmu Sosial Politik": ["Hubungan Internasional", "Ilmu Komunikasi", "Ilmu Pemerintahan", "International Program of International Relations (IPIREL)", "International Program of Government Affairs and Administration (IGOV)", "International Program of Communication Studies (IP-COS)"],
+                "Ekonomi & Bisnis": ["Manajemen", "Akuntansi", "Ekonomi", "International Program of Management and Business (IMaBs)", "International Program of Accounting (IPAcc)", "International Undergraduate Program for Islamic Economics and Finance (IPIEF)", "Magister Manajemen", "Magister Akuntansi", "Magister Ekonomi", "Doktor Manajemen"],
+                "Pendidikan Bahasa": ["Pendidikan Bahasa Inggris", "Pendidikan Bahasa Arab", "Pendidikan Bahasa Jepang"],
+                "Hukum": ["Hukum", "Internasional Ilmu Hukum (IPOLS)"],
+                "Psikologi": ["Psikologi"]
+            };
 
-        function updateProdiDropdown(selectedFakultas) {
-            prodiSelect.innerHTML = '<option value="" disabled selected>Pilih Program Studi</option>';
-            prodiSelect.disabled = true;
+            function updateProdiDropdown(selectedFakultas) {
+                prodiSelect.innerHTML = '<option value="" disabled selected>Pilih Program Studi</option>';
 
-            if (selectedFakultas && prodiData[selectedFakultas]) {
-                const prodiList = prodiData[selectedFakultas];
+                if (selectedFakultas && prodiData[selectedFakultas]) {
+                    prodiSelect.disabled = false;
+                    prodiSelect.classList.remove('bg-gray-50'); // Hilangkan efek abu-abu saat aktif
 
-                prodiList.forEach(prodi => {
-                    const option = document.createElement('option');
-                    option.value = prodi;
-                    option.textContent = prodi;
-
-                    if (oldProdi === prodi) {
-                        option.selected = true;
-                    }
-
-                    prodiSelect.appendChild(option);
-                });
-
-                prodiSelect.disabled = false;
+                    const prodiList = prodiData[selectedFakultas];
+                    prodiList.forEach(prodi => {
+                        const option = document.createElement('option');
+                        option.value = prodi;
+                        option.textContent = prodi;
+                        if (oldProdi === prodi) {
+                            option.selected = true;
+                        }
+                        prodiSelect.appendChild(option);
+                    });
+                } else {
+                    prodiSelect.disabled = true;
+                    prodiSelect.classList.add('bg-gray-50'); // Tambah efek abu-abu saat disabled
+                }
             }
-        }
 
-        fakultasSelect.addEventListener('change', function() {
-            updateProdiDropdown(this.value);
+            fakultasSelect.addEventListener('change', function () {
+                updateProdiDropdown(this.value);
+            });
+
+            const initialFakultas = fakultasSelect.value;
+            if (initialFakultas) {
+                updateProdiDropdown(initialFakultas);
+            }
         });
+    </script>
+</body>
 
-        const initialFakultas = fakultasSelect.value;
-        if (initialFakultas) {
-            updateProdiDropdown(initialFakultas);
-        }
-    });
-</script>
+</html>

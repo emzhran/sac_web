@@ -1,57 +1,176 @@
-<x-guest-layout class="bg-gray-100 min-h-screen flex items-center justify-end px-10">
-    <div class="relative flex w-full max-w-7xl bg-white rounded-xl shadow-lg overflow-hidden">
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
-        <!-- LOGO -->
-        <div class="w-1/2 bg-pink-100 flex items-center justify-center">
-            <img src="{{ asset('asset/images/logo-umy-sac-transparan-01.png') }}" alt="Logo" class="w-80 h-auto">
-        </div>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <!-- FORM  -->
-        <div class="w-1/2 p-12">
-            <h2 class="text-4xl font-bold text-gray-800 mb-4">Masuk</h2>
-            <p class="text-lg text-gray-500 mb-8">Masukkan email dan password Anda</p>
-            @if (session('status'))
-                <div class="mb-4 px-4 py-3 rounded-lg bg-pink-50 border border-pink-200 text-pink-700 text-sm font-medium">
-                    {{ session('status') }}
-                </div>
-            @endif
+    <title>Login - Student Activity Center</title>
 
-            <!-- Login Form -->
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-                <div class="mb-6">
-                    <x-input-label for="email" :value="'Email'" />
-                    <x-text-input id="email" class="block mt-2 w-full" type="email" name="email" :value="old('email')" required autofocus />
-                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                </div>
+    <style>
+        /* Hilangkan ikon mata bawaan browser Edge/IE agar tidak double */
+        input::-ms-reveal,
+        input::-ms-clear {
+            display: none;
+        }
+    </style>
+    
+</head>
 
-                <div class="mb-6">
-                    <x-input-label for="password" :value="'Password'" />
-                    <x-text-input id="password" class="block mt-2 w-full" type="password" name="password" required />
-                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                </div>
+<body class="antialiased bg-white">
 
-                <div class="mb-6 flex items-center">
-                    <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-pink-600 shadow-sm focus:ring-pink-500" name="remember">
-                    <label for="remember_me" class="ml-2 text-sm text-gray-600">Ingat akun saya</label>
+    <div class="flex flex-col md:flex-row min-h-screen">
+
+        <div
+            class="bg-purple-500 text-white p-8 md:p-12 md:w-1/2 relative overflow-hidden flex flex-col justify-between">
+
+            <div class="z-10 relative">
+                <div class="mb-6 bg-white/20 w-fit p-2 rounded-lg backdrop-blur-sm">
+                    <img src="{{ asset('asset/images/logo-umy-sac-transparan-01.png') }}" alt="Logo"
+                        class="h-12 w-auto ">
                 </div>
 
-                <div class="mt-6">
-                    <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded-md shadow-md text-lg">
-                        MASUK
-                    </button>
-                </div>
-
-                <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-600">
-                        Belum punya akun?
-                        <a href="{{ route('register') }}" class="font-semibold text-pink-600 hover:text-pink-700 underline">
-                            Daftar Sekarang.
-                        </a>
+                <div class="mt-10 md:mt-20">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Sign in to</h1>
+                    <h2 class="text-2xl md:text-3xl font-semibold mb-6">Student Activity Center</h2>
+                    <p class="max-w-md opacity-90 leading-relaxed">
+                        Selamat datang di portal layanan aktivitas mahasiswa. Silakan masuk untuk mengakses layanan
+                        peminjaman lapangan dan fasilitas lainnya.
                     </p>
                 </div>
-            </form>
+            </div>
+
+            <div class="absolute right-0 top-1/3 transform translate-x-1/4 pointer-events-none">
+                <div class="relative w-64 h-64">
+                    <svg class="text-white/20 absolute top-10 left-10 w-16 h-16" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+                    </svg>
+                    <svg class="text-white/20 absolute bottom-10 right-10 w-20 h-20" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+                    </svg>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <div class="relative w-40 h-40">
+                            <svg class="text-orange-400 w-40 h-40 transform rotate-45"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path
+                                    d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+                                <path
+                                    d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+                                <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+                                <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <svg class="text-white/20 absolute bottom-10 left-10 w-24 h-24 pointer-events-none"
+                xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+            </svg>
+        </div>
+
+        <div class="p-8 md:p-12 md:w-1/2 flex items-center justify-center bg-white relative">
+            <div class="w-full max-w-md">
+
+                <div class="absolute top-8 right-8 text-right">
+                    <span class="text-gray-500 text-sm">Belum punya akun?</span>
+                    <a href="{{ route('register') }}"
+                        class="text-purple-500 font-medium hover:underline text-sm ml-1">Daftar</a>
+                </div>
+
+                <div class="mb-10 mt-8 md:mt-0">
+                    <p class="text-gray-600 mb-2 font-medium">
+                        Welcome to <span class="text-purple-500 font-bold">SAC UMY</span>
+                    </p>
+                    <h1 class="text-4xl font-bold text-gray-900">Sign in</h1>
+                </div>
+
+                @if (session('status'))
+                    <div class="mb-4 p-4 rounded-md bg-purple-50 border border-purple-200 text-purple-600 text-sm">
+                        {{ session('status') }}
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('login') }}" class="space-y-6">
+                    @csrf
+
+                    <div class="space-y-2">
+                        <label for="email" class="block text-sm font-medium text-gray-700">
+                            Email Address
+                        </label>
+                        <x-text-input id="email"
+                            class="w-full h-12 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                            type="email" name="email" :value="old('email')" placeholder="username@umy.ac.id" required
+                            autofocus />
+                        <x-input-error :messages="$errors->get('email')" class="mt-1" />
+                    </div>
+
+                    <div class="space-y-2" x-data="{ show: false }">
+                        <label for="password" class="block text-sm font-medium text-gray-700">
+                            Password
+                        </label>
+
+                        <div class="relative">
+                            <x-text-input id="password"
+                                class="w-full h-12 px-4 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                                ::type="show ? 'text' : 'password'" name="password" placeholder="Enter your password"
+                                required />
+
+                            <button type="button" @click="show = !show"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-purple-600 focus:outline-none">
+
+                                <svg x-show="!show" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+
+                                <svg x-show="show" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="flex justify-between items-center mt-1">
+                            <x-input-error :messages="$errors->get('password')" />
+
+                            @if (Route::has('password.request'))
+                                <a href="{{ route('password.request') }}"
+                                    class="text-purple-500 text-sm hover:underline ml-auto">
+                                    Forgot Password?
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input id="remember_me" type="checkbox"
+                            class="rounded border-gray-300 text-purple-600 shadow-sm focus:ring-purple-500"
+                            name="remember">
+                        <label for="remember_me" class="ml-2 text-sm text-gray-600">Ingat saya</label>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full h-12 bg-purple-500 hover:bg-pink-600 text-white font-bold rounded-md transition duration-200 shadow-sm">
+                        Sign in
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
-</x-guest-layout>
+</body>
+
+</html>

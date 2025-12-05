@@ -20,10 +20,10 @@
         }
     }">
 
-    <div class="min-h-screen bg-gray-100">
+    <div class="min-h-screen bg-gray-100 relative">
 
-        <aside class="bg-white border-r fixed inset-y-0 left-0 flex flex-col z-50 overflow-hidden"
-            :class="sidebarOpen ? 'w-64' : 'w-16'">
+        <aside class="fixed inset-y-0 left-0 z-50 h-screen bg-white border-r border-gray-200 "
+            :class="sidebarOpen ? 'w-64' : 'w-20'">
             @auth
                 @if (Auth::user()->role === 'admin')
                     @include('layouts.sidebar-admin')
@@ -33,15 +33,15 @@
             @endauth
         </aside>
 
-        <div class="fixed top-0 left-0 right-0 z-40"
-            :class="sidebarOpen ? 'ml-64' : 'ml-16'">
+        <div class="fixed top-0 left-0 right-0 z-40 "
+            :class="sidebarOpen ? 'ml-64' : 'ml-20'">
             @include('layouts.navigation')
         </div>
 
-        <div class="pt-20"
-            :class="sidebarOpen ? 'ml-64' : 'ml-16'">
+        <div class="pt-16 min-h-screen "
+            :class="sidebarOpen ? 'ml-64' : 'ml-20'">
 
-            <main class="p-10">
+            <main class="p-6 md:p-10">
                 {{ $slot ?? '' }}
                 @yield('content')
             </main>

@@ -1,83 +1,105 @@
-<aside :class="sidebarOpen ? 'w-64 p-6' : 'w-20 p-4'" 
-       class="bg-white shadow-md fixed inset-y-0 left-0 flex flex-col transition-all duration-300 ease-in-out z-50">
-    
-    <div class="flex items-center" :class="sidebarOpen ? 'justify-between' : 'justify-center'">
-        <img x-show="sidebarOpen" x-transition 
-             src="{{ asset('asset/images/logo-umy-sac-transparan-01.png') }}" 
-             alt="Sport Center UMY Logo" class="w-36 h-auto">
-        
-        <button @click="sidebarOpen = !sidebarOpen" 
-                class="p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+<div class="flex flex-col h-full bg-white text-gray-700 transition-all duration-300 shadow-xl rounded-2xl"
+     :class="sidebarOpen ? 'w-64' : 'w-20'">
+
+    <div class="flex items-center justify-between p-4 h-20">
+        <div x-show="sidebarOpen" class="flex-1 flex justify-center">
+            <img src="{{ asset('asset/images/logo-umy-sac-transparan-01.png') }}" 
+                 alt="SAC Logo" class="h-10 w-auto object-contain">
+        </div>
+
+        <button @click="toggleSidebar()" 
+                class="p-2 rounded hover:bg-gray-300 focus:outline-none transition-colors"
+                :class="!sidebarOpen ? 'mx-auto' : ''">
+            <svg class="w-6 h-6 stroke-current text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
         </button>
     </div>
 
-    <div x-show="sidebarOpen" x-transition class="mt-4 text-center">
-        <p class="text-lg font-semibold text-gray-800">
-            {{ Auth::user()->name }}
-        </p>
+    <div class="w-full px-3 mt-2 flex-1 overflow-y-auto space-y-1">
+        
+        <a href="{{ route('dashboard') }}"
+           class="flex items-center w-full h-12 px-3 rounded-xl transition-all duration-200 group
+           {{ request()->routeIs('dashboard') ? 'bg-indigo-500 text-white shadow-md' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900' }}"
+           :class="!sidebarOpen ? 'justify-center' : ''">
+            
+            <svg class="w-5 h-5 stroke-current shrink-0" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            
+            <span x-show="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Dashboard</span>
+        </a>
+
+        <a href="{{ route('profile.edit') }}"
+           class="flex items-center w-full h-12 px-3 rounded-xl transition-all duration-200 group
+           {{ request()->routeIs('profile.edit') ? 'bg-indigo-500 text-white shadow-md' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900' }}"
+           :class="!sidebarOpen ? 'justify-center' : ''">
+            
+            <svg class="w-5 h-5 stroke-current shrink-0" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            
+            <span x-show="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Profil Saya</span>
+        </a>
+
+        <a href="{{ route('booking.index') }}"
+           class="flex items-center w-full h-12 px-3 rounded-xl transition-all duration-200 group
+           {{ request()->routeIs(['booking.index', 'booking.create']) ? 'bg-indigo-500 text-white shadow-md' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900' }}"
+           :class="!sidebarOpen ? 'justify-center' : ''">
+            
+            <svg class="w-5 h-5 stroke-current shrink-0" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            
+            <span x-show="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Booking Lapangan</span>
+        </a>
+
+        <a href="{{ route('riwayat.index') }}"
+           class="flex items-center w-full h-12 px-3 rounded-xl transition-all duration-200 group
+           {{ request()->routeIs('riwayat.index') ? 'bg-indigo-500 text-white shadow-md' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900' }}"
+           :class="!sidebarOpen ? 'justify-center' : ''">
+            
+            <svg class="w-5 h-5 stroke-current shrink-0" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            
+            <span x-show="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Riwayat</span>
+        </a>
+
     </div>
 
-    <nav class="mt-8 flex-1 relative">
-        <ul class="space-y-2 text-gray-700"> 
-            
-            <li>
-                <a href="{{ route('dashboard') }}"
-                   class="block py-2 flex items-center rounded text-sm 
-                   {{ request()->routeIs('dashboard') ? 'bg-blue-500 text-white' : 'hover:bg-gray-100' }}"
-                   :class="sidebarOpen ? 'space-x-3 px-4' : 'justify-center'">
-                    
-                    <img src="{{ asset('asset/images/image.png') }}" alt="home" class="w-4 h-4">
-                    <span x-show="sidebarOpen" x-transition>Dashboard</span>
-                </a>
-            </li>
-            
-            <li>
-                <a href="{{ route('profile.edit') }}"
-                   class="block py-2 flex items-center rounded text-sm 
-                   {{ request()->routeIs('profile.edit') ? 'bg-blue-500 text-white' : 'hover:bg-gray-100' }}"
-                   :class="sidebarOpen ? 'space-x-3 px-4' : 'justify-center'">
-                    
-                    <img src="{{ asset('asset/images/person.png') }}" alt="Profil" class="w-4 h-4">
-                    <span x-show="sidebarOpen" x-transition>Profil Saya</span>
-                </a>
-            </li>
-            
-            <li>
-                <a href="{{ route('booking.index') }}"
-                   class="block py-2 flex items-center rounded text-sm 
-                   {{ request()->routeIs(['booking.index', 'booking.create']) ? 'bg-blue-500 text-white' : 'hover:bg-gray-100' }}"
-                   :class="sidebarOpen ? 'space-x-3 px-4' : 'justify-center'">
-                    
-                    <img src="{{ asset('asset/images/kalender.png') }}" alt="calendar" class="w-4 h-4">
-                    <span x-show="sidebarOpen" x-transition>Booking Lapangan</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('riwayat.index') }}" 
-                   class="block py-2 flex items-center rounded text-sm 
-                   {{ request()->routeIs('riwayat.index') ? 'bg-blue-500 text-white' : 'hover:bg-gray-100' }}"
-                   :class="sidebarOpen ? 'space-x-3 px-4' : 'justify-center'">
-                    
-                    <img src="{{ asset('asset/images/riwayat.png') }}" alt="history" class="w-4 h-4">
-                    <span x-show="sidebarOpen" x-transition>Riwayat</span>
-                </a>
-            </li>
-            
-            <li class="absolute bottom-0 left-0 w-full" :class="sidebarOpen ? 'px-6' : 'px-4'">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" 
-                            class="block w-full py-2 flex items-center rounded text-sm hover:bg-red-500 hover:text-white transition text-gray-700"
-                            :class="sidebarOpen ? 'space-x-3 px-4' : 'justify-center'">
-                        
-                        <img src="{{ asset('asset/images/keluar.png') }}" alt="out" class="w-4 h-4">
-                        <span x-show="sidebarOpen" x-transition>Keluar</span>
-                    </button>
-                </form>
-            </li>
-        </ul>
-    </nav>
-</aside>
+    <div class="mt-auto w-full px-3 pb-4 pt-4 space-y-1 border-t border-gray-200">
+        
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit"
+                    class="flex items-center w-full h-12 px-3 rounded-xl hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-all duration-200"
+                    :class="!sidebarOpen ? 'justify-center' : ''">
+                
+                <svg class="w-5 h-5 stroke-current shrink-0" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+
+                <span x-show="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Log out</span>
+            </button>
+        </form>
+
+        <div x-show="sidebarOpen" class="flex items-center gap-3 px-3 py-3 mt-2 rounded-xl bg-indigo-50">
+            <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-semibold">
+                {{ substr(Auth::user()->name, 0, 1) }}
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">{{ Auth::user()->name }}</p>
+                <p class="text-xs text-gray-500">Mahasiswa</p>
+            </div>
+        </div>   
+
+    </div>
+
+</div>
