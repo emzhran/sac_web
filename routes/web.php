@@ -45,6 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/booking/{lapangan:id}/store', [BookingController::class, 'store'])->name('booking.store');
 
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
+    Route::get('/riwayat/{id}/pdf', [RiwayatController::class, 'cetakPdf'])->name('riwayat.pdf');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -59,7 +60,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     });
 
     Route::get('/jadwal', [JadwalController::class, 'adminIndex'])->name('jadwal.index');
-
+    Route::get('/riwayat/export', [RiwayatController::class, 'exportExcel'])->name('riwayat.export');
     Route::get('/riwayat', [RiwayatController::class, 'adminIndex'])->name('riwayat.index');
     Route::patch('/riwayat/{id}/status', [RiwayatController::class, 'updateStatus'])->name('riwayat.updateStatus');
     Route::delete('/riwayat/{id}', [RiwayatController::class, 'destroy'])->name('riwayat.destroy');

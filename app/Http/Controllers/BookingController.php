@@ -6,10 +6,10 @@ use App\Models\Lapangan;
 use App\Models\Booking;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException; 
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;   
+use Illuminate\Database\Eloquent\Builder;
 
 class BookingController extends Controller
 {
@@ -17,7 +17,7 @@ class BookingController extends Controller
     {
         $allLapanganNames = Lapangan::select('nama')
             ->get()
-            ->map(fn($lap) => explode(' ', trim($lap->nama))[0]) 
+            ->map(fn($lap) => explode(' ', trim($lap->nama))[0])
             ->unique()
             ->values();
 
@@ -57,12 +57,20 @@ class BookingController extends Controller
         $request->validate([
             'tanggal' => 'required|date|after_or_equal:today',
             'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
         ]);
 
         $tanggal = $request->query('tanggal');
         $jam_mulai = $request->query('jam_mulai');
         $jam_selesai = $request->query('jam_selesai');
+
+        $start = Carbon::createFromFormat('H:i', $jam_mulai);
+        $end = Carbon::createFromFormat('H:i', $jam_selesai);
+
+        if ($start->diffInMinutes($end) > 180) {
+            return redirect()->route('booking.index', ['lapangan' => $lapangan->nama])
+                ->with('error', 'Maksimal durasi booking hanya boleh 3 jam.');
+        }
 
         $isConflict = $this->checkConflict($lapangan->id, $tanggal, $jam_mulai, $jam_selesai);
         
@@ -73,7 +81,6 @@ class BookingController extends Controller
 
         return view('booking.create', compact('lapangan', 'tanggal', 'jam_mulai', 'jam_selesai'));
     }
-
     public function store(Request $request, Lapangan $lapangan)
     {
         if (!Auth::user()->hasVerifiedEmail()) {
@@ -83,12 +90,17 @@ class BookingController extends Controller
         $request->validate([
             'tanggal' => 'required|date|after_or_equal:today',
             'jam_mulai' => 'required|date_format:H:i',
-            'jam_selesai' => 'required|date_format:H:i',
+            'jam_selesai' => 'required|date_format:H:i|after:jam_mulai',
         ]);
 
         $tanggal = $request->tanggal;
         $jamMulai = $request->jam_mulai;
         $jamSelesai = $request->jam_selesai;
+        $start = Carbon::createFromFormat('H:i', $jamMulai);
+        $end = Carbon::createFromFormat('H:i', $jamSelesai);
+        if ($start->diffInMinutes($end) > 180) {
+            return back()->with('error', 'Maksimal durasi booking hanya boleh 3 jam.');
+        }
 
         $isConflict = $this->checkConflict(
             $lapangan->id,
@@ -104,9 +116,8 @@ class BookingController extends Controller
         $booking = Booking::create([
             'lapangan_id' => $lapangan->id,
             'user_id' => Auth::id(),
-            'nama_pemesan' => Auth::user()->name,
             'status' => 'pending',
-    ]);
+        ]);
 
         $booking->jadwals()->create([
             'tanggal' => $tanggal,
@@ -126,9 +137,9 @@ class BookingController extends Controller
             ->whereHas('booking', function (Builder $query) use ($lapangan) {
                 $query->where('lapangan_id', $lapangan->id);
             })
-            ->with('booking') 
+            ->with('booking.user')
             ->get();
-        
+
         $formattedBookings = [];
 
         foreach ($jadwals as $jadwal) {
@@ -136,17 +147,18 @@ class BookingController extends Controller
 
             if ($booking) {
                 $tanggal = $jadwal->tanggal;
+                $userName = $booking->user ? $booking->user->name : 'User Tidak Dikenal';
 
                 $formattedBookings[$tanggal][] = [
                     'jam_mulai' => $jadwal->jam_mulai,
                     'jam_selesai' => $jadwal->jam_selesai,
-                    'nama' => $booking->nama_pemesan,
+                    'nama' => $userName,
                     'status' => $booking->status,
                     'booking_id' => $booking->id,
                 ];
             }
         }
-        
+
         return $formattedBookings;
     }
 
@@ -178,7 +190,7 @@ class BookingController extends Controller
             ->where(function (Builder $query) use ($jamMulai, $jamSelesai) {
                 $query->where(function (Builder $q) use ($jamMulai, $jamSelesai) {
                     $q->where('jam_mulai', '<', $jamSelesai)
-                      ->where('jam_selesai', '>', $jamMulai);
+                        ->where('jam_selesai', '>', $jamMulai);
                 });
             })
             ->exists();

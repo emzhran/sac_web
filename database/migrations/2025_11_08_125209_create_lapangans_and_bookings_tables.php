@@ -22,7 +22,8 @@ return new class extends Migration
 
             $table->foreignId('lapangan_id')->constrained('lapangans')->onDelete('cascade');
             
-            $table->string('nama_pemesan'); 
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            
             $table->string('status')->default('pending');
 
             $table->timestamps();

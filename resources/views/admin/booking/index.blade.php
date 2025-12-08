@@ -5,7 +5,6 @@
 @section('content')
 <div class="flex-1 p-8 bg-gray-50 min-h-screen">
     
-    <!-- Header Section -->
     <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <h1 class="text-3xl font-bold text-gray-900 mb-1">
@@ -17,7 +16,6 @@
         </div>
     </div>
 
-    <!-- Filter Tabs -->
     <div class="mb-6 flex flex-wrap gap-3">
         @php
             $currentStatus = $status ?? 'pending';
@@ -65,7 +63,6 @@
         @endforeach
     </div>
 
-    <!-- Main Content Card -->
     <div class="bg-white shadow-xl shadow-indigo-500/5 rounded-2xl border border-gray-100 overflow-hidden">
         
         @if (session('status'))
@@ -117,14 +114,17 @@
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">{{ $booking->nama_pemesan }}</div>
-                                    <div class="text-xs text-gray-400">ID: #{{ $booking->id }}</div>
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ $booking->user->name ?? 'User Tidak Dikenal' }}
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        {{ $booking->user->email ?? '' }}
+                                    </div>
                                 </td>
 
                                 <td class="px-6 py-4">
-                                    {{-- FIX ERROR: Loop Jadwal (HasMany) --}}
-                                    @if($booking->jadwal->isNotEmpty())
-                                        @foreach($booking->jadwal as $jadwal)
+                                    @if($booking->jadwals->isNotEmpty())
+                                        @foreach($booking->jadwals as $jadwal)
                                             <div class="mb-1 last:mb-0">
                                                 <div class="text-sm font-semibold text-gray-700">
                                                     {{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('d M Y') }}
@@ -157,7 +157,6 @@
                                 @if ($currentStatus === 'pending')
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
                                         <div class="flex items-center justify-center gap-2">
-                                            <!-- Approve Button -->
                                             <form id="approve-form-{{ $booking->id }}" method="POST" action="{{ route('admin.booking.update_status', ['booking' => $booking->id, 'status' => 'approved']) }}">
                                                 @csrf @method('PATCH')
                                                 <button type="button" 
@@ -168,7 +167,6 @@
                                                 </button>
                                             </form>
 
-                                            <!-- Reject Button -->
                                             <form id="reject-form-{{ $booking->id }}" method="POST" action="{{ route('admin.booking.update_status', ['booking' => $booking->id, 'status' => 'rejected']) }}">
                                                 @csrf @method('PATCH')
                                                 <button type="button" 
@@ -206,7 +204,7 @@
             html: `Apakah Anda yakin ingin <b>${actionType}</b> pemesanan untuk <br><b>${lapanganNama}</b>?`,
             icon: isApprove ? 'question' : 'warning',
             showCancelButton: true,
-            confirmButtonColor: isApprove ? '#10b981' : '#f43f5e', // Emerald-500 or Rose-500
+            confirmButtonColor: isApprove ? '#10b981' : '#f43f5e',
             cancelButtonColor: '#9ca3af',
             confirmButtonText: isApprove ? 'Ya, Setujui' : 'Ya, Tolak',
             cancelButtonText: 'Batal',

@@ -12,18 +12,9 @@
                 Manajemen Pengguna
             </h1>
             <p class="text-sm text-gray-500">
-                Kelola data mahasiswa dan staf yang terdaftar dalam sistem.
+                Kelola data mahasiswa yang terdaftar dalam sistem.
             </p>
         </div>
-
-        <!-- Tombol Tambah (Opsional - Jika ingin diaktifkan, hilangkan komentar) -->
-        {{-- 
-        <a href="{{ route('register') }}" 
-           class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/30 transform hover:-translate-y-0.5">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-            Tambah Pengguna
-        </a> 
-        --}}
     </div>
 
     <!-- Main Content Card -->
@@ -51,8 +42,8 @@
                         <tr>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-16">No</th>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Nama Lengkap</th>
-                            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Kontak</th>
-                            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Identitas (NIM)</th>
+                            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Email</th>
+                            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">NIM</th>
                             <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider w-32">Aksi</th>
                         </tr>
                     </thead>
@@ -101,22 +92,6 @@
                                            title="Edit Data">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                         </a>
-
-                                        <!-- Delete Button (Assuming route exists, update 'admin.users.destroy' if needed) -->
-                                        {{-- 
-                                        <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}" class="inline-block">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="button" 
-                                                onclick="confirmDelete(this.form, '{{ $user->name }}')"
-                                                class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all flex items-center justify-center border border-rose-100 hover:border-rose-600" 
-                                                title="Hapus Pengguna">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            </button>
-                                        </form> 
-                                        --}}
-                                        
-                                        <!-- Placeholder Delete Button (Hapus form ini jika route sudah ada) -->
                                         <button type="button" 
                                             onclick="confirmDelete(null, '{{ $user->name }}')"
                                             class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all flex items-center justify-center border border-rose-100 hover:border-rose-600" 

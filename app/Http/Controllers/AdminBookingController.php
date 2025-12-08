@@ -12,13 +12,14 @@ class AdminBookingController extends Controller
     public function index(Request $request)
     {
         $status = $request->get('status', 'pending');
-        $query = Booking::with(['lapangan', 'jadwal']);
+
+        $query = Booking::with(['lapangan', 'jadwals', 'user']);
 
         if ($status !== 'all') {
             $query->where('status', $status);
         }
 
-        $bookings = $query->whereHas('jadwal')
+        $bookings = $query->whereHas('jadwals')
             ->join('jadwals', 'bookings.id', '=', 'jadwals.booking_id')
             ->orderBy('jadwals.tanggal', 'asc')
             ->select('bookings.*')
@@ -42,10 +43,11 @@ class AdminBookingController extends Controller
         try {
             $booking->status = $status;
             $booking->save();
+            $namaPemesan = $booking->user->name ?? 'User Tidak Dikenal';
 
             $message = $status === 'approved'
-                ? 'Pemesanan ' . $booking->nama_pemesan . ' berhasil disetujui (Approved).'
-                : 'Pemesanan ' . $booking->nama_pemesan . ' berhasil ditolak (Rejected).';
+                ? 'Pemesanan ' . $namaPemesan . ' berhasil disetujui (Approved).'
+                : 'Pemesanan ' . $namaPemesan . ' berhasil ditolak (Rejected).';
 
             return Redirect::back()->with('status', $message);
         } catch (\Exception $e) {

@@ -67,10 +67,8 @@ class JadwalController extends Controller
         
         $timeSlots = $this->generateTimeSlots(7, 22);
 
-        // Kirim $allLapangans agar navigasi Blade berfungsi
         return view('admin.jadwal.index', compact('dates', 'timeSlots', 'allBookings', 'lapanganFilterName', 'allLapangans'));
     }
-
 
     protected function fetchBookings(Lapangan $lapangan, $start, $end)
     {
@@ -78,7 +76,7 @@ class JadwalController extends Controller
             ->whereHas('booking', function (Builder $query) use ($lapangan) {
                 $query->where('lapangan_id', $lapangan->id);
             })
-            ->with('booking') 
+            ->with(['booking.user']) 
             ->get();
         
         $formattedBookings = [];
@@ -88,11 +86,12 @@ class JadwalController extends Controller
 
             if ($booking) {
                 $tanggal = $jadwal->tanggal;
+                $userName = $booking->user ? $booking->user->name : 'User Tidak Dikenal';
 
                 $formattedBookings[$tanggal][] = [
                     'jam_mulai' => $jadwal->jam_mulai,
                     'jam_selesai' => $jadwal->jam_selesai,
-                    'nama' => $booking->nama_pemesan,
+                    'nama' => $userName, 
                     'status' => $booking->status,
                     'booking_id' => $booking->id,
                 ];

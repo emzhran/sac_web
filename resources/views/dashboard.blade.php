@@ -123,7 +123,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col">
-                                        @foreach($booking->jadwal as $jadwal)
+                                        @foreach($booking->jadwals as $jadwal)
                                             <span class="text-sm text-gray-700 font-medium">{{ \Carbon\Carbon::parse($jadwal->tanggal)->format('d M Y') }}</span>
                                             <span class="text-xs text-gray-500">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</span>
                                         @endforeach

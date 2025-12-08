@@ -12,22 +12,18 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Setup Awal
         $faker = Faker::create('id_ID'); 
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         
-        // Bersihkan tabel
         DB::table('users')->truncate();
         DB::table('jadwals')->truncate();
         DB::table('bookings')->truncate();
         DB::table('lapangans')->truncate();
 
-        // 2. Panggil Seeder Lapangan
         $this->call([
             LapanganSeeder::class,
         ]);
 
-        // 3. Data Mapping Fakultas & Prodi
         $dataPendidikan = [
             "Teknik" => ["Teknik Sipil", "Teknik Mesin", "Teknik Elektro", "Teknologi Informasi", "Teknologi Elektro-Medis", "Teknologi Rekayasa Otomotif"],
             "Agama Islam" => ["Komunikasi dan Penyiaran Islam", "Pendidikan Agama Islam", "Ekonomi Syariah"],
@@ -41,7 +37,6 @@ class DatabaseSeeder extends Seeder
             "Psikologi" => ["Psikologi"]
         ];
 
-        // 4. Buat User Admin & Kelompok 3 (AKUN TETAP)
         User::create([
             'name' => 'Admin User',
             'email' => 'sac@example.com',
@@ -63,20 +58,16 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('12345678'),
             'role' => 'user',
         ]);
-
-        // 5. Buat 10 User Dummy (AKUN UNTUK LOGIN)
-        // Password untuk semua akun ini adalah: 12345678
         
         for ($i = 1; $i <= 10; $i++) {
-            // Pilih Fakultas & Prodi Random
             $fakultasKey = array_rand($dataPendidikan);
             $prodiArray = $dataPendidikan[$fakultasKey];
             $prodiValue = $prodiArray[array_rand($prodiArray)];
 
             User::create([
-                'name' => "Mahasiswa User $i", // Nama mudah dikenali
-                'email' => "user{$i}@student.umy.ac.id", // Email berurutan: user1, user2, dst
-                'nim' => '2024' . str_pad($i, 6, '0', STR_PAD_LEFT), // NIM: 2024000001, dst
+                'name' => "Mahasiswa User $i", 
+                'email' => "user{$i}@student.umy.ac.id",
+                'nim' => '2024' . str_pad($i, 6, '0', STR_PAD_LEFT),
                 'fakultas' => $fakultasKey,
                 'prodi' => $prodiValue,
                 'email_verified_at' => now(),

@@ -11,9 +11,13 @@ class Booking extends Model
 
     protected $fillable = [
         'lapangan_id',
-        'nama_pemesan',
+        'user_id',
         'status',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function lapangan()
     {
@@ -21,10 +25,6 @@ class Booking extends Model
     }
 
     public function jadwals()
-    {
-        return $this->hasMany(Jadwal::class);
-    }
-    public function jadwal()
     {
         return $this->hasMany(Jadwal::class);
     }

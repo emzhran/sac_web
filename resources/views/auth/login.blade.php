@@ -37,8 +37,8 @@
                     <h1 class="text-4xl md:text-5xl font-bold mb-4">Sign in to</h1>
                     <h2 class="text-2xl md:text-3xl font-semibold mb-6">Student Activity Center</h2>
                     <p class="max-w-md opacity-90 leading-relaxed">
-                        Selamat datang di portal layanan aktivitas mahasiswa. Silakan masuk untuk mengakses layanan
-                        peminjaman lapangan dan fasilitas lainnya.
+                        Selamat datang di portal layanan aktivitas olahraga mahasiswa. Silahkan masuk untuk mengakses layanan
+                        peminjaman lapangan.
                     </p>
                 </div>
             </div>

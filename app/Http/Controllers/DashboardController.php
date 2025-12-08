@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Booking; // Pastikan model Booking ada
-use App\Models\Lapangan; // Pastikan model Lapangan ada
+use App\Models\Booking;
+use App\Models\Lapangan;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -14,24 +14,21 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // Mengambil semua booking milik user ini (berdasarkan nama karena tidak ada user_id di schema)
-        // Disarankan: Tambahkan user_id di tabel bookings kedepannya.
-        $myBookings = Booking::with(['lapangan', 'jadwal'])
-                        ->where('nama_pemesan', $user->name)
+        $myBookings = Booking::with(['lapangan', 'jadwals'])
+                        ->where('user_id', $user->id)
                         ->latest()
                         ->get();
 
-        // Statistik
         $totalBookings = $myBookings->count();
         $pendingBookings = $myBookings->where('status', 'pending')->count();
         
-        // Mencari jadwal bermain selanjutnya (yang status approved dan tanggal >= hari ini)
         $nextSchedule = null;
         $approvedBookings = $myBookings->where('status', 'approved');
         
         foreach($approvedBookings as $booking) {
-            foreach($booking->jadwal as $jadwal) {
+            foreach($booking->jadwals as $jadwal) {
                 $jadwalDate = Carbon::parse($jadwal->tanggal . ' ' . $jadwal->jam_mulai);
+                
                 if($jadwalDate->isFuture()) {
                     if(!$nextSchedule || $jadwalDate->lessThan($nextSchedule['datetime'])) {
                         $nextSchedule = [
@@ -45,7 +42,6 @@ class DashboardController extends Controller
             }
         }
 
-        // List semua lapangan untuk kartu booking
         $fields = Lapangan::all();
 
         return view('dashboard', compact(

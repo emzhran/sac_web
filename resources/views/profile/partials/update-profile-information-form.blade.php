@@ -5,7 +5,7 @@
                 {{ __('Informasi Profil') }}
             </h2>
             <p class="mt-1 text-sm text-gray-500">
-                {{ __("Informasi akun Anda bersifat tetap (Read-only).") }}
+                {{ __("Informasi akun Anda bersifat tetap.") }}
             </p>
         </div>
         <div class="hidden sm:flex h-12 w-12 rounded-full bg-indigo-100 items-center justify-center text-indigo-600 font-bold text-xl">

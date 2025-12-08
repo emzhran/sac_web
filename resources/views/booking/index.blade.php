@@ -11,28 +11,24 @@
         <h1 class="text-3xl font-bold text-gray-900 mb-1">
             Jadwal & Ketersediaan
         </h1>
-        <p class="text-sm text-gray-500">Lihat jadwal 7 hari ke depan dan pilih slot waktu untuk bermain.</p>
+        <p class="text-sm text-gray-500">Lihat jadwal 7 hari ke depan.</p>
     </div>
 
     <div class="bg-white shadow-lg shadow-indigo-500/5 rounded-2xl border border-gray-100 p-6">
         
-        {{-- BAGIAN 1: LOGIKA PERSIAPAN DATA & FILTER --}}
         <div class="mb-6">
             <label class="text-sm font-medium text-gray-700 mb-3 block">Pilih Lapangan:</label>
             <div class="flex flex-wrap gap-3">
                 @php
-                    // 1. Ambil semua data lapangan untuk tombol filter
                     $allLapangansData = \App\Models\Lapangan::all();
 
-                    // Ambil nama unik (kata pertama) untuk tombol tab
                     $uniqueNames = $allLapangansData->map(fn($lap) => explode(' ', trim($lap->nama))[0]) 
                         ->unique()
+                        ->sort()
                         ->values();
 
-                    // Menentukan filter yang sedang aktif
                     $currentFilterBase = explode(' ', $lapanganFilterName)[0];
 
-                    // 2. LOGIKA PENCARIAN ID (Dipindah ke atas agar efisien)
                     $foundLapangan = \App\Models\Lapangan::where('nama', $lapanganFilterName)
                         ->orWhere('nama', 'LIKE', $lapanganFilterName . '%') 
                         ->first();
@@ -44,7 +40,6 @@
                     $globalLapanganId = $foundLapangan ? $foundLapangan->id : null;
                 @endphp
 
-                {{-- Loop Tombol Filter --}}
                 @foreach ($uniqueNames as $lapName)
                     <a href="{{ route('booking.index', ['lapangan' => $lapName]) }}"
                        class="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border
@@ -57,22 +52,22 @@
             </div>
         </div>
 
-        {{-- BAGIAN 2: TABEL JADWAL --}}
         <div class="overflow-hidden rounded-xl border border-gray-200">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+            
+            <div class="w-full">
+                <table class="w-full divide-y divide-gray-200 table-fixed">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider border-r border-gray-200 sticky left-0 bg-gray-50 z-10">
+                            <th scope="col" class="w-28 px-2 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider border-r border-gray-200 bg-gray-50">
                                 Waktu
                             </th>
                             @foreach ($dates as $date)
                                 <th scope="col"
-                                    class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider min-w-[140px]
+                                    class="px-1 py-4 text-center text-xs font-bold uppercase tracking-wider
                                            {{ $date->isToday() ? 'bg-indigo-50 text-indigo-700' : 'text-gray-500' }}">
                                     <div class="flex flex-col">
-                                        <span>{{ $date->translatedFormat('D') }}</span>
-                                        <span class="text-xs font-normal opacity-80">{{ $date->translatedFormat('d M') }}</span>
+                                        <span>{{ strtoupper($date->translatedFormat('D')) }}</span>
+                                        <span class="text-[10px] font-normal opacity-80 mt-1">{{ $date->translatedFormat('d M') }}</span>
                                     </div>
                                 </th>
                             @endforeach
@@ -85,8 +80,10 @@
                                 $jamSelesai = sprintf('%02d:00', (int)substr($jamMulai, 0, 2) + 1);
                             @endphp
                             <tr class="hover:bg-gray-50/50 transition-colors">
-                                <td class="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-100 bg-gray-50/30 sticky left-0 z-10">
-                                    {{ $jamMulai }} - {{ $jamSelesai }}
+                                
+                                <td class="px-2 py-3 text-center whitespace-nowrap text-xs font-bold text-gray-900 border-r border-gray-200 bg-gray-50">
+                                    {{ $jamMulai }}
+                                    <div class="text-[10px] text-gray-400 font-normal mt-0.5">{{ $jamSelesai }}</div>
                                 </td>
 
                                 @foreach ($dates as $date)
@@ -106,9 +103,9 @@
                                         $isPast = $date->isBefore(now()->startOfDay());
                                     @endphp
 
-                                    <td class="px-2 py-2 text-center align-middle border-l border-dashed border-gray-100">
+                                    <td class="px-1 py-1 h-14 text-center align-middle border-l border-dashed border-gray-100">
+                                        
                                         @if ($isBooked)
-                                            {{-- TAMPILAN JIKA SUDAH DIBOOKING --}}
                                             @php
                                                 $status = strtolower($isBooked['status']);
                                                 $styles = match ($status) {
@@ -117,19 +114,18 @@
                                                     default => 'bg-rose-100 text-rose-700 ring-1 ring-rose-600/20',
                                                 };
                                             @endphp
-                                            <div class="flex flex-col items-center justify-center p-2 rounded-lg {{ $styles }}">
-                                                <span class="text-xs font-bold truncate max-w-[120px]">{{ $isBooked['nama'] }}</span>
-                                                <span class="text-[10px] uppercase tracking-wide opacity-80 font-semibold">{{ ucfirst($status) }}</span>
+                                            <div class="w-full h-full min-h-[40px] flex flex-col items-center justify-center rounded-md {{ $styles }} p-1 cursor-default">
+                                                <span class="text-[10px] font-bold leading-tight truncate w-full px-1">
+                                                    {{ \Illuminate\Support\Str::limit($isBooked['nama'], 12, '...') }}
+                                                </span>
                                             </div>
 
                                         @elseif ($isPast)
-                                            {{-- TAMPILAN WAKTU LAMPAU --}}
-                                            <div class="h-full w-full py-2 bg-gray-50 rounded-lg border border-gray-100 flex items-center justify-center">
-                                                 <span class="text-gray-400 text-xs italic">Lewat</span>
+                                            <div class="w-full h-full min-h-[40px] bg-gray-50 rounded-md flex items-center justify-center">
+                                                 <span class="text-gray-300 text-[10px]">-</span>
                                             </div>
 
                                         @else
-                                            {{-- TAMPILAN SLOT KOSONG --}}
                                             @if($globalLapanganId)
                                                 <a href="{{ route('booking.create', [
                                                             'lapangan' => $globalLapanganId, 
@@ -137,14 +133,14 @@
                                                             'jam_mulai' => $jamMulai,
                                                             'jam_selesai' => $jamSelesai
                                                         ]) }}"
-                                                   class="group flex items-center justify-center w-full h-full py-2 rounded-lg border border-transparent 
+                                                   class="group flex items-center justify-center w-full h-full min-h-[40px] rounded-md border border-transparent 
                                                           hover:bg-indigo-50 hover:border-indigo-200 transition-all cursor-pointer">
-                                                    <span class="text-gray-300 text-xs font-medium italic group-hover:text-indigo-600 group-hover:not-italic group-hover:font-bold">
-                                                        + Book
+                                                    <span class="text-gray-300 text-[10px] group-hover:text-indigo-600 group-hover:font-bold">
+                                                        + booking
                                                     </span>
                                                 </a>
                                             @else
-                                                <span class="text-rose-400 text-xs font-medium bg-rose-50 px-2 py-1 rounded">Error</span>
+                                                <span class="text-rose-400 text-[10px]">x</span>
                                             @endif
                                         @endif
                                     </td>
@@ -156,27 +152,23 @@
             </div>
         </div>
 
-        {{-- FOOTER NOTE --}}
         <div class="mt-6 flex items-start gap-3 p-4 bg-amber-50 border border-amber-100 rounded-xl text-amber-800">
             <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <div class="text-sm leading-relaxed">
-                <strong>Catatan Penting:</strong> 
-                Slot dengan tanda <span class="text-indigo-600 font-bold">+ Book</span> tersedia untuk dipesan.
-                Jadwal yang ditampilkan mencakup <strong>7 hari ke depan</strong>. Mohon pastikan tanggal dan jam sudah sesuai sebelum melakukan pembayaran.
+                <strong>Catatan:</strong> Klik <span class="text-indigo-600 font-bold">+ booking</span> untuk melakukan peminjaman. Pastikan tanggal dan jam sudah sesuai.
             </div>
         </div>
     </div>
 </div>
 
-{{-- BAGIAN 3: MODAL VERIFIKASI EMAIL --}}
 @if(session('email_unverified'))
 <div id="emailModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-opacity">
     <div class="bg-white rounded-2xl p-8 w-full max-w-md text-center shadow-2xl transform transition-all scale-100">
         <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
             </svg>
         </div>
         
@@ -232,4 +224,5 @@
     });
 </script>
 @endif
+
 @endsection

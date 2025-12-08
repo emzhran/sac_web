@@ -5,7 +5,6 @@
 @section('content')
 <div class="flex-1 p-8 bg-gray-50 min-h-screen">
     
-    <!-- Header Section -->
     <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <h1 class="text-3xl font-bold text-gray-900 mb-1">
@@ -23,7 +22,6 @@
         </a>
     </div>
 
-    <!-- Main Content Card -->
     <div class="bg-white shadow-xl shadow-indigo-500/5 rounded-2xl border border-gray-100 overflow-hidden">
         
         @if (session('success'))
@@ -49,9 +47,8 @@
                 <table class="min-w-full divide-y divide-gray-100">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-16">ID</th>
+                            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-16">No</th>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Nama Lapangan</th>
-                            <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Jenis Olahraga</th>
                             <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider w-32">Aksi</th>
                         </tr>
                     </thead>
@@ -59,40 +56,25 @@
                         @foreach ($lapangans as $lapangan)
                             <tr class="hover:bg-gray-50/50 transition-colors group">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-mono">
-                                    #{{ $lapangan->id }}
+                                    {{ $loop->iteration }}
                                 </td>
                                 
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-3">
-                                        <!-- <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl shadow-sm border border-indigo-100">
-                                            @if(Str::contains($lapangan->nama, 'Futsal')) ⚽ 
-                                            @elseif(Str::contains($lapangan->nama, 'Basket')) 🏀 
-                                            @elseif(Str::contains($lapangan->nama, 'Voli')) 🏐 
-                                            @else 🏸 @endif
-                                        </div> -->
                                         <div>
                                             <span class="block text-sm font-bold text-gray-900">{{ $lapangan->nama }}</span>
-                                            <span class="text-xs text-gray-400">Status: Aktif</span>
                                         </div>
                                     </div>
                                 </td>
 
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                                        {{ explode(' ', $lapangan->nama)[0] }}
-                                    </span>
-                                </td>
-
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        <!-- Edit Button -->
                                         <a href="{{ route('admin.lapangan.edit', $lapangan) }}" 
                                            class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white transition-all flex items-center justify-center border border-amber-100 hover:border-amber-500" 
                                            title="Edit">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                         </a>
 
-                                        <!-- Delete Button -->
                                         <form method="POST" action="{{ route('admin.lapangan.destroy', $lapangan) }}" class="inline-block">
                                             @csrf
                                             @method('DELETE')

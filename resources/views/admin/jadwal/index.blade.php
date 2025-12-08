@@ -10,10 +10,10 @@
     <!-- Header Section -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-1">
-            Jadwal Pemanfaatan Lapangan
+            Jadwal Penggunaan Lapangan
         </h1>
         <p class="text-sm text-gray-500">
-            Pantau ketersediaan dan penggunaan lapangan untuk 7 hari ke depan (Admin View).
+            Pantau ketersediaan dan penggunaan lapangan untuk 7 hari ke depan.
         </p>
     </div>
 
@@ -138,7 +138,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <div class="text-sm leading-relaxed">
-                <strong>Catatan Admin:</strong> 
+                <strong>Catatan:</strong> 
                 Jadwal ini menampilkan okupansi lapangan untuk 7 hari ke depan.
                 Slot berwarna <span class="text-emerald-600 font-bold">Hijau</span> adalah booking yang sudah disetujui (Approved), sedangkan <span class="text-amber-600 font-bold">Kuning</span> adalah booking yang masih menunggu persetujuan (Pending).
             </div>
