@@ -156,8 +156,29 @@
             <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-            <div class="text-sm leading-relaxed">
-                <strong>Catatan:</strong> Klik <span class="text-indigo-600 font-bold">+ booking</span> untuk melakukan peminjaman. Pastikan tanggal dan jam sudah sesuai.
+        <div class="text-sm leading-relaxed">
+            <div class="mb-3">
+                <strong>Catatan:</strong> Klik <span class="text-indigo-600 font-bold">+ booking</span> untuk melakukan peminjaman lapangan. Pastikan tanggal dan jam sudah sesuai.
+            </div>
+
+                <div class="flex flex-wrap items-center gap-3 text-xs border-t border-amber-200/50 pt-3 mt-1">
+                    <span class="text-amber-800 font-semibold mr-1">Status:</span>
+                    
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-amber-200 text-amber-700 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                        Menunggu
+                    </span>
+
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-emerald-200 text-emerald-700 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        Disetujui
+                    </span>
+
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-rose-200 text-rose-700 shadow-sm">
+                        <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                        Ditolak
+                    </span>
+                </div>
             </div>
         </div>
     </div>

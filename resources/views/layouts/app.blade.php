@@ -22,7 +22,7 @@
 
     <div class="min-h-screen bg-gray-100 relative">
 
-        <aside class="fixed inset-y-0 left-0 z-50 h-screen bg-white border-r border-gray-200 "
+        <aside class="fixed inset-y-0 left-0 z-50 h-screen bg-white border-r border-gray-200 transition-all duration-300 ease-in-out"
             :class="sidebarOpen ? 'w-64' : 'w-20'">
             @auth
                 @if (Auth::user()->role === 'admin')
@@ -33,12 +33,12 @@
             @endauth
         </aside>
 
-        <div class="fixed top-0 left-0 right-0 z-40 "
+        <div class="fixed top-0 left-0 right-0 z-40 transition-all duration-300 ease-in-out"
             :class="sidebarOpen ? 'ml-64' : 'ml-20'">
             @include('layouts.navigation')
         </div>
 
-        <div class="pt-16 min-h-screen "
+        <div class="pt-16 min-h-screen transition-all duration-300 ease-in-out"
             :class="sidebarOpen ? 'ml-64' : 'ml-20'">
 
             <main class="p-6 md:p-10">

@@ -150,7 +150,7 @@
                             </h3>
                             <div class="mt-2">
                                 <p class="text-sm text-gray-500 mb-4">
-                                    Silahkan pilih rentang tanggal data yang ingin di-export.
+                                    Silakan pilih rentang tanggal data yang ingin di-export.
                                 </p>
                                 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

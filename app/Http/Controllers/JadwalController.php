@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Models\Lapangan; 
-use App\Models\Jadwal;   
-use App\Models\Booking; 
-use Illuminate\Database\Eloquent\Builder; 
+use App\Models\Lapangan;
+use App\Models\Jadwal;
+use App\Models\Booking;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 class JadwalController extends Controller
 {
@@ -40,7 +44,7 @@ class JadwalController extends Controller
     public function adminIndex(Request $request)
     {
         $allLapangans = \App\Models\Lapangan::orderBy('nama', 'asc')->get();
-        $defaultLap = $allLapangans->first(); 
+        $defaultLap = $allLapangans->first();
         $defaultLapName = $defaultLap ? $defaultLap->nama : 'Lapangan Default (Tidak Ada)';
         $lapanganFilterName = $request->query('lapangan', $defaultLapName);
         $lapangan = $allLapangans->firstWhere('nama', $lapanganFilterName);
@@ -53,7 +57,7 @@ class JadwalController extends Controller
         if ($lapangan) {
             $lapanganFilterName = $lapangan->nama;
         }
-        
+
         $dates = $this->generateDateRange(7);
         $start = Carbon::today()->toDateString();
         $end = Carbon::today()->addDays(6)->toDateString();
@@ -69,6 +73,81 @@ class JadwalController extends Controller
 
         return view('admin.jadwal.index', compact('dates', 'timeSlots', 'allBookings', 'lapanganFilterName', 'allLapangans'));
     }
+    public function create(Request $request)
+    {
+        $lapangans = Lapangan::all();
+        $users = User::where('role', '!=', 'admin')->orderBy('name')->get();
+        
+        $selectedLapanganId = $request->query('lapangan_id');
+        if ($selectedLapanganId) {
+            $lapangan = Lapangan::find($selectedLapanganId);
+        } else {
+            $lapangan = $lapangans->first();
+        }
+
+        $tanggal = $request->query('tanggal', date('Y-m-d'));
+        
+        session()->flashInput(['jam_mulai' => $request->query('jam_mulai')]); 
+
+        return view('admin.jadwal.create', compact(
+            'lapangans',
+            'users',
+            'lapangan',
+            'tanggal' 
+        ));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nama_pemesan_manual' => 'required|string|max:255',
+            'lapangan_id' => 'required|exists:lapangans,id',
+            'tanggal' => 'required|date|after_or_equal:today',
+            'jam_mulai' => 'required',
+            'jam_selesai' => 'required|after:jam_mulai',
+        ]);
+
+        $isConflict = Jadwal::where('tanggal', $request->tanggal)
+            ->whereHas('booking', function ($q) use ($request) {
+                $q->where('lapangan_id', $request->lapangan_id)
+                    ->where('status', '!=', 'rejected');
+            })
+            ->where(function ($query) use ($request) {
+                $query->where('jam_mulai', '<', $request->jam_selesai)
+                    ->where('jam_selesai', '>', $request->jam_mulai);
+            })
+            ->exists();
+
+        if ($isConflict) {
+            return back()->with('error', 'Jadwal bentrok dengan booking yang sudah ada!')->withInput();
+        }
+
+        DB::transaction(function () use ($request) {
+
+            $user = User::firstOrCreate(
+                ['name' => $request->nama_pemesan_manual],
+                [
+                    'email' => Str::slug($request->nama_pemesan_manual) . '_' . uniqid() . '@guest.com', 
+                    'password' => Hash::make('password'),
+                    'role' => 'user'
+                ]
+            );
+
+            $booking = Booking::create([
+                'user_id' => $user->id,
+                'lapangan_id' => $request->lapangan_id,
+                'status' => 'approved',
+            ]);
+
+            $booking->jadwals()->create([
+                'tanggal' => $request->tanggal,
+                'jam_mulai' => $request->jam_mulai,
+                'jam_selesai' => $request->jam_selesai,
+            ]);
+        });
+
+        return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal manual berhasil ditambahkan.');
+    }
 
     protected function fetchBookings(Lapangan $lapangan, $start, $end)
     {
@@ -76,9 +155,9 @@ class JadwalController extends Controller
             ->whereHas('booking', function (Builder $query) use ($lapangan) {
                 $query->where('lapangan_id', $lapangan->id);
             })
-            ->with(['booking.user']) 
+            ->with(['booking.user'])
             ->get();
-        
+
         $formattedBookings = [];
 
         foreach ($jadwals as $jadwal) {
@@ -91,13 +170,13 @@ class JadwalController extends Controller
                 $formattedBookings[$tanggal][] = [
                     'jam_mulai' => $jadwal->jam_mulai,
                     'jam_selesai' => $jadwal->jam_selesai,
-                    'nama' => $userName, 
+                    'nama' => $userName,
                     'status' => $booking->status,
                     'booking_id' => $booking->id,
                 ];
             }
         }
-        
+
         return $formattedBookings;
     }
 

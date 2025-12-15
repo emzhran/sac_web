@@ -13,6 +13,7 @@ class Booking extends Model
         'lapangan_id',
         'user_id',
         'status',
+        'confirmed_at'
     ];
     public function user()
     {

@@ -25,7 +25,7 @@ class CustomVerifyEmail extends VerifyEmailBase
         return (new MailMessage)
             ->subject('Verifikasi Email - Student Activity Center')
             ->greeting('Halo ' . $notifiable->name . '!')
-            ->line('Untuk verifikasi email silahkan klik tombol di bawah ini.')
+            ->line('Untuk verifikasi email silakan klik tombol di bawah ini.')
             ->action('Verifikasi Email', $url)
             ->line('Jika Anda tidak membuat akun, abaikan email ini.')
             ->salutation('Salam, Student Activity Center');

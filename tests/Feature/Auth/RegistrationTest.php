@@ -20,12 +20,23 @@ class RegistrationTest extends TestCase
     {
         $response = $this->post('/register', [
             'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'nim' => '20230140001',
+            'fakultas' => 'Teknik',
+            'prodi' => 'Teknologi Informasi',
+            'email' => 'testuser@gmail.com',
+            'password' => 'P4ssw0rd!',
+            'password_confirmation' => 'P4ssw0rd!',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $this->assertGuest();
+
+        $response->assertRedirect(route('login'));
+
+        $response->assertSessionHas('status', 'Registrasi berhasil! Silakan cek email anda untuk verifikasi akun.');
+        
+        $this->assertDatabaseHas('users', [
+            'email' => 'testuser@gmail.com',
+            'nim' => '20230140001',
+        ]);
     }
 }

@@ -1,5 +1,11 @@
-<div class="flex flex-col h-full bg-white text-gray-700 transition-all duration-300 shadow-xl rounded-2xl"
+<div class="flex flex-col h-full bg-white text-gray-700 transition-all duration-300 shadow-xl rounded-2xl overflow-hidden"
      :class="sidebarOpen ? 'w-64' : 'w-20'">
+
+    <style>
+        .overflow-y-auto::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
 
     <div class="flex items-center justify-between p-4 h-20">
         <div x-show="sidebarOpen" class="flex-1 flex justify-center">
@@ -17,7 +23,8 @@
         </button>
     </div>
 
-    <div class="w-full px-3 mt-2 flex-1 overflow-y-auto space-y-1">
+    <div class="w-full px-3 mt-2 flex-1 overflow-y-auto overflow-x-hidden space-y-1"
+         style="scrollbar-width: none; -ms-overflow-style: none;">
         
         <a href="{{ route('dashboard') }}"
            class="flex items-center w-full h-12 px-3 rounded-xl transition-all duration-200 group
@@ -70,7 +77,6 @@
             
             <span x-show="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Riwayat</span>
         </a>
-
     </div>
 
     <div class="mt-auto w-full px-3 pb-4 pt-4 space-y-1 border-t border-gray-200">
@@ -99,7 +105,6 @@
                 <p class="text-xs text-gray-500">Mahasiswa</p>
             </div>
         </div>   
-
     </div>
 
 </div>

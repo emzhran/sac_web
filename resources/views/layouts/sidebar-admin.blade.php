@@ -1,5 +1,11 @@
-<div class="flex flex-col h-full bg-white text-gray-700 transition-all duration-300 shadow-xl rounded-2xl"
+<div class="flex flex-col h-full bg-white text-gray-700 transition-all duration-300 shadow-xl rounded-2xl overflow-hidden"
      :class="sidebarOpen ? 'w-64' : 'w-20'">
+
+     <style>
+        .overflow-y-auto::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
 
     <!-- Header Section -->
     <div class="flex items-center justify-between p-4 h-20">
@@ -19,7 +25,7 @@
     </div>
 
     <!-- Navigation Menu -->
-    <div class="w-full px-3 mt-2 flex-1 overflow-y-auto space-y-1">
+    <div class="w-full px-3 mt-2 flex-1 overflow-y-auto overflow-x-hidden space-y-1">
         
         <!-- Dashboard -->
         <a href="{{ route('admin.dashboard') }}"

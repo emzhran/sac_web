@@ -76,7 +76,7 @@ class BookingController extends Controller
         
         if ($isConflict) {
             return redirect()->route('booking.index', ['lapangan' => $lapangan->nama])
-                ->with('error', 'Jam yang Anda pilih sudah terisi. Silahkan pilih jam lain.');
+                ->with('error', 'Jam yang Anda pilih sudah terisi. Silakan pilih jam lain.');
         }
 
         return view('booking.create', compact('lapangan', 'tanggal', 'jam_mulai', 'jam_selesai'));

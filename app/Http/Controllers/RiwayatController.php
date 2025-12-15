@@ -8,6 +8,7 @@ use App\Models\Booking;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\BookingExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
 
 class RiwayatController extends Controller
 {
@@ -85,4 +86,35 @@ class RiwayatController extends Controller
 
         return Excel::download(new BookingExport($startDate, $endDate), 'Laporan_Booking_'.$startDate.'_sd_'.$endDate.'.xlsx');
     }
+
+    public function confirmPresence($id)
+    {
+        $booking = Booking::findOrFail($id);
+
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if ($booking->status !== 'approved') {
+            return redirect()->back()->with('error', 'Booking belum disetujui.');
+        }
+
+        $booking->update([
+            'confirmed_at' => Carbon::now()
+        ]);
+
+        return redirect()->back()->with('success', 'Kehadiran berhasil dikonfirmasi! Selamat berolahraga.');
+    }
+
+    public function show($id)
+{
+
+    $booking = Booking::with(['lapangan', 'jadwals', 'user'])->findOrFail($id);
+ 
+    if (auth()->user()->role !== 'admin' && $booking->user_id !== auth()->id()) {
+        abort(403);
+    }
+
+    return view('riwayat.show', compact('booking'));
+}
 }

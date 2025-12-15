@@ -46,6 +46,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
     Route::get('/riwayat/{id}/pdf', [RiwayatController::class, 'cetakPdf'])->name('riwayat.pdf');
+    Route::get('/riwayat/{id}', [RiwayatController::class, 'show'])->name('riwayat.show');
+    
+    Route::post('/booking/{id}/confirm-presence', [RiwayatController::class, 'confirmPresence'])->name('booking.confirm');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -60,6 +63,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     });
 
     Route::get('/jadwal', [JadwalController::class, 'adminIndex'])->name('jadwal.index');
+    Route::get('/jadwal/create', [JadwalController::class, 'create'])->name('jadwal.create');
+    Route::post('/jadwal', [JadwalController::class, 'store'])->name('jadwal.store');
     Route::get('/riwayat/export', [RiwayatController::class, 'exportExcel'])->name('riwayat.export');
     Route::get('/riwayat', [RiwayatController::class, 'adminIndex'])->name('riwayat.index');
     Route::patch('/riwayat/{id}/status', [RiwayatController::class, 'updateStatus'])->name('riwayat.updateStatus');
