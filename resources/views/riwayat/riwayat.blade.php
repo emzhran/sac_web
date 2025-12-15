@@ -2,11 +2,12 @@
 @section('page_title', 'Riwayat Peminjaman')
 
 @section('content')
-<div class="flex-1 p-8 bg-gray-50 min-h-screen">
+{{-- Ubah padding p-8 jadi p-4 md:p-8 agar mobile lebih lega --}}
+<div class="flex-1 p-4 md:p-8 bg-gray-50 min-h-screen w-full max-w-full overflow-x-hidden">
 
-    <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="mb-6 md:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-1">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
                 Riwayat Peminjaman
             </h1>
             <p class="text-sm text-gray-500">
@@ -26,12 +27,12 @@
     </div>
     @endif
 
-    <div class="bg-white shadow-xl shadow-indigo-500/5 rounded-2xl border border-gray-100 overflow-hidden">
+    <div class="bg-transparent md:bg-white md:shadow-xl md:shadow-indigo-500/5 rounded-2xl md:border border-gray-100 overflow-hidden">
 
         @if ($riwayats->isEmpty())
-        <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
-            <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-white rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-sm md:shadow-none">
+            <div class="w-20 h-20 md:w-24 md:h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                <svg class="w-10 h-10 md:w-12 md:h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
                 </svg>
             </div>
@@ -44,7 +45,9 @@
             </a>
         </div>
         @else
-        <div class="overflow-x-auto">
+        
+        {{-- TAMPILAN DESKTOP (TABLE) --}}
+        <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-100">
                 <thead class="bg-gray-50">
                     <tr>
@@ -193,6 +196,125 @@
             </table>
         </div>
 
+        {{-- TAMPILAN MOBILE (CARD) --}}
+        <div class="md:hidden space-y-4">
+            @foreach ($riwayats as $r)
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 relative">
+                
+                {{-- Header Card --}}
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-lg bg-indigo-50 flex items-center justify-center text-xl">
+                            @if(Str::contains($r->lapangan->nama ?? '', 'Futsal')) ⚽
+                            @elseif(Str::contains($r->lapangan->nama ?? '', 'Basket')) 🏀
+                            @elseif(Str::contains($r->lapangan->nama ?? '', 'Voli')) 🏐
+                            @else 🏸 @endif
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-gray-900">{{ $r->lapangan->nama ?? 'Unknown' }}</h3>
+                            <p class="text-xs text-gray-500">Olahraga</p>
+                        </div>
+                    </div>
+                    
+                    {{-- Status Badge Mobile --}}
+                    @php
+                    $statusStyles = match($r->status) {
+                        'approved' => 'bg-emerald-100 text-emerald-700',
+                        'pending' => 'bg-amber-100 text-amber-700',
+                        'rejected' => 'bg-rose-100 text-rose-700',
+                        default => 'bg-gray-100 text-gray-700'
+                    };
+                    $statusLabel = match($r->status) {
+                        'approved' => 'Disetujui',
+                        'pending' => 'Menunggu',
+                        'rejected' => 'Ditolak',
+                        default => ucfirst($r->status)
+                    };
+                    @endphp
+                    <span class="inline-flex items-center px-2 py-1 rounded-lg text-[10px] font-bold {{ $statusStyles }}">
+                        {{ $statusLabel }}
+                    </span>
+                </div>
+
+                {{-- Body Card (Jadwal) --}}
+                <div class="border-t border-gray-100 pt-3 mb-3">
+                    @if($r->jadwals && $r->jadwals->isNotEmpty())
+                        @foreach($r->jadwals as $jadwal)
+                        <div class="flex justify-between items-center mb-1 last:mb-0">
+                            <span class="text-sm font-medium text-gray-800">
+                                {{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('d M Y') }}
+                            </span>
+                            <span class="text-xs bg-gray-50 px-2 py-0.5 rounded text-gray-600 border border-gray-200">
+                                {{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}
+                            </span>
+                        </div>
+                        @endforeach
+                    @else
+                        <span class="text-xs text-red-400 italic">Jadwal tidak ditemukan</span>
+                    @endif
+                </div>
+
+                {{-- Footer Card (Action Buttons) --}}
+                @if($r->status == 'approved')
+                    <div class="flex items-center gap-2 mt-2">
+                        @if(!$r->confirmed_at)
+                            @php
+                                $firstJadwal = $r->jadwals->first();
+                                $tanggalMain = $firstJadwal ? $firstJadwal->tanggal : null;
+                                $jamMulai = $firstJadwal ? $firstJadwal->jam_mulai : null;
+                                
+                                $deadlineString = null;
+                                $isAlreadyLate = false;
+
+                                if ($tanggalMain && $jamMulai) {
+                                    $bookingTime = \Carbon\Carbon::parse($tanggalMain . ' ' . $jamMulai);
+                                    $deadlineTime = $bookingTime->copy()->addHour();
+                                    $deadlineString = $deadlineTime->format('Y-m-d H:i:s'); 
+                                    if (\Carbon\Carbon::now()->gt($deadlineTime)) {
+                                        $isAlreadyLate = true;
+                                    }
+                                }
+                            @endphp
+                            
+                            <div class="booking-status-wrapper w-full" data-deadline="{{ $deadlineString }}">
+                                <span class="status-late w-full inline-flex justify-center items-center px-3 py-2 bg-red-50 text-red-700 text-xs font-semibold rounded-lg border border-red-200 {{ $isAlreadyLate ? '' : 'hidden' }}">
+                                    Tidak Terkonfirmasi
+                                </span>
+
+                                <button onclick="checkTimeAndOpenModal('{{ route('booking.confirm', $r->id) }}', '{{ $tanggalMain }}', '{{ $jamMulai }}')"
+                                    class="status-active w-full inline-flex justify-center items-center gap-1.5 px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition-colors shadow-sm {{ $isAlreadyLate ? 'hidden' : '' }}">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    Hadir
+                                </button>
+                            </div>
+                        @else
+                            <span class="w-full inline-flex justify-center items-center px-3 py-2 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg border border-gray-200">
+                                <svg class="w-3 h-3 mr-1 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                Terkonfirmasi
+                            </span>
+                        @endif
+
+                        <a href="{{ route('riwayat.show', $r->id) }}" 
+                        class="w-full inline-flex justify-center items-center gap-1.5 px-3 py-2 bg-white text-gray-700 text-xs font-semibold rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            Detail
+                        </a>
+                    </div>
+                @else
+                    <div class="text-center py-2 bg-gray-50 rounded-lg text-xs text-gray-400 italic">
+                        Tidak ada aksi
+                    </div>
+                @endif
+            </div>
+            @endforeach
+        </div>
+
         <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
             {{ $riwayats->links() }}
         </div>
@@ -200,11 +322,14 @@
     </div>
 </div>
 
+{{-- MODAL AREA (TIDAK PERLU DIUBAH BANYAK KARENA SUDAH CUKUP RESPONSIVE) --}}
+{{-- Saya hanya memastikan class width-nya aman untuk mobile --}}
+
 <div id="confirmModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeConfirmModal()"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                     <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -223,7 +348,7 @@
                 </div>
             </div>
             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
-                <form id="confirmForm" method="POST" action="">
+                <form id="confirmForm" method="POST" action="" class="w-full sm:w-auto">
                     @csrf
                     <button type="button" id="btnCheckLocation" onclick="checkLocationAndSubmit()" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-emerald-600 text-base font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:ml-3 sm:w-auto sm:text-sm">Cek Lokasi & Hadir</button>
                 </form>
@@ -237,7 +362,7 @@
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeErrorModal()"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                     <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -267,7 +392,7 @@
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeEarlyAccessModal()"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                     <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-amber-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -306,7 +431,7 @@
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeMessageModal()"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                     <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
