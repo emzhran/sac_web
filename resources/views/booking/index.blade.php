@@ -178,6 +178,45 @@
             </div>
         </div>
 
+        <div class="mt-6 border-t border-gray-100 pt-6">
+            <div class="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-start">
+                
+                {{-- Icon Info --}}
+                <div class="flex-shrink-0 mt-0.5">
+                    <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                        </svg>
+                    </div>
+                </div>
+
+                {{-- Teks Panduan --}}
+                <div class="flex-1">
+                    <h4 class="text-sm font-bold text-gray-900 mb-1">Panduan Booking</h4>
+                    <ul class="text-xs text-gray-600 space-y-2 leading-relaxed">
+                        <li class="flex items-start gap-2">
+                            <span class="mt-1 w-1 h-1 rounded-full bg-indigo-400 flex-shrink-0"></span>
+                            <span>
+                                <strong>Navigasi Mobile:</strong> Jika menggunakan HP, geser tabel ke kanan/kiri untuk melihat jam atau hari yang terpotong.
+                            </span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="mt-1 w-1 h-1 rounded-full bg-indigo-400 flex-shrink-0"></span>
+                            <span>
+                                <strong>Cara Booking:</strong> Klik tombol <span class="inline-flex items-center justify-center px-1.5 py-0.5 rounded border border-indigo-200 bg-white text-indigo-600 font-bold text-[10px] mx-0.5 shadow-sm">+</span> pada kotak yang kosong (putih) untuk memesan jadwal tersebut.
+                            </span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="mt-1 w-1 h-1 rounded-full bg-indigo-400 flex-shrink-0"></span>
+                            <span>
+                                <strong>Jadwal Lewat:</strong> Kotak berwarna abu-abu (-) menandakan waktu sudah berlalu dan tidak dapat dipesan.
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>
 
