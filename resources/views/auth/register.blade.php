@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Register - Sport Centre UMY</title>
+    <title>Register - Sport Center UMY</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -23,7 +23,7 @@
     <div class="flex flex-col md:flex-row min-h-screen">
 
         <div class="relative overflow-hidden flex flex-col justify-between p-8 md:p-12 md:w-1/2 text-white bg-cover bg-center bg-no-repeat"
-             style="background-image: url('{{ asset('asset/images/login.jpeg') }}');">
+            style="background-image: url('{{ asset('asset/images/login.jpeg') }}');">
 
             <div class="absolute inset-0 bg-blue-900/60 z-0"></div>
 
@@ -37,7 +37,7 @@
                     <h1 class="text-4xl md:text-5xl font-bold mb-4">Daftar Akun Terlebih Dahulu</h1>
                     <h2 class="text-2xl md:text-3xl font-semibold mb-6">Create Your Account</h2>
                     <p class="max-w-md opacity-90 leading-relaxed">
-                        Bergabunglah dengan Sport Centre UMY. Daftarkan diri Anda untuk mulai meminjam fasilitas
+                        Bergabunglah dengan Sport center UMY. Daftarkan diri Anda untuk mulai meminjam fasilitas
                         dan mengakses layanan kemahasiswaan.
                     </p>
                 </div>

@@ -103,15 +103,13 @@
                                             }
                                         }
                                         
-                                        $isPast = false;
-                                        if ($date->isPast() && !$date->isToday()) {
-                                            $isPast = true;
-                                        } elseif ($date->isToday()) {
-                                            $now = now()->format('H:i');
-                                            if ($jamMulai < $now) {
-                                                $isPast = true;
-                                            }
-                                        }
+                                        $nowWIB = \Carbon\Carbon::now('Asia/Jakarta');
+
+                                        $isDatePast = $date->format('Y-m-d') < $nowWIB->format('Y-m-d');
+                                        $isDateToday = $date->format('Y-m-d') === $nowWIB->format('Y-m-d');
+
+                                        $isTimePast = $isDateToday && ($jamMulai < $nowWIB->format('H:i'));
+                                        $isPast = $isDatePast || $isTimePast;
                                     @endphp
 
                                     <td class="px-1 py-1 h-16 align-middle border-l border-dashed border-gray-100 relative">

@@ -15,7 +15,7 @@ class RiwayatController extends Controller
     public function index(Request $request)
     {
         $riwayats = Booking::where('user_id', Auth::id())
-            ->with(['lapangan', 'jadwals']) 
+            ->with(['lapangan', 'jadwals'])
             ->orderByDesc('created_at')
             ->paginate(10);
 
@@ -47,7 +47,7 @@ class RiwayatController extends Controller
     public function destroy($id)
     {
         $booking = Booking::findOrFail($id);
-        
+
         if (!auth()->user()->is_admin && $booking->user_id !== auth()->id()) {
             abort(403, 'Unauthorized action.');
         }
@@ -62,7 +62,7 @@ class RiwayatController extends Controller
         $booking = Booking::with(['user', 'lapangan', 'jadwals'])->findOrFail($id);
 
         if ($booking->user_id !== Auth::id()) {
-             abort(403, 'Anda tidak memiliki akses ke pdf ini.');
+            abort(403, 'Anda tidak memiliki akses ke pdf ini.');
         }
 
         if ($booking->status !== 'approved') {
@@ -70,7 +70,7 @@ class RiwayatController extends Controller
         }
 
         $pdf = Pdf::loadView('pdf.pdf_booking', compact('booking'));
-        
+
         return $pdf->download('PDF Booking SAC' . '.pdf');
     }
 
@@ -78,13 +78,13 @@ class RiwayatController extends Controller
     {
         $request->validate([
             'start_date' => 'required|date',
-            'end_date'   => 'required|date|after_or_equal:start_date',
+            'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
         $startDate = $request->start_date;
         $endDate = $request->end_date;
 
-        return Excel::download(new BookingExport($startDate, $endDate), 'Laporan_Booking_'.$startDate.'_sd_'.$endDate.'.xlsx');
+        return Excel::download(new BookingExport($startDate, $endDate), 'Laporan_Booking_' . $startDate . '_sd_' . $endDate . '.xlsx');
     }
 
     public function confirmPresence($id)
@@ -107,14 +107,14 @@ class RiwayatController extends Controller
     }
 
     public function show($id)
-{
+    {
 
-    $booking = Booking::with(['lapangan', 'jadwals', 'user'])->findOrFail($id);
- 
-    if (auth()->user()->role !== 'admin' && $booking->user_id !== auth()->id()) {
-        abort(403);
+        $booking = Booking::with(['lapangan', 'jadwals', 'user'])->findOrFail($id);
+
+        if (auth()->user()->role !== 'admin' && $booking->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return view('riwayat.show', compact('booking'));
     }
-
-    return view('riwayat.show', compact('booking'));
-}
 }
