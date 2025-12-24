@@ -6,7 +6,6 @@ use App\Models\Lapangan;
 use App\Models\Booking;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -49,7 +48,91 @@ class BookingController extends Controller
 
     public function create(Request $request, Lapangan $lapangan)
     {
-        if (!Auth::user()->hasVerifiedEmail()) {
+        $user = Auth::user();
+        $now = Carbon::now('Asia/Jakarta');
+
+        if ($user->suspended_until && $now->greaterThanOrEqualTo($user->suspended_until)) {
+            $user->update([
+                'missed_attendance_count' => 0,
+                'suspended_until' => null
+            ]);
+
+            $oldBookings = Booking::where('user_id', $user->id)
+                ->where('status', 'approved')
+                ->whereNull('confirmed_at')
+                ->with('jadwals')
+                ->get();
+
+            foreach ($oldBookings as $old) {
+                $jadwal = $old->jadwals->first();
+                if ($jadwal) {
+                    $waktuSelesai = Carbon::parse(
+                        $jadwal->tanggal . ' ' . $jadwal->jam_selesai,
+                        'Asia/Jakarta'
+                    );
+
+                    if ($waktuSelesai->lessThan($now)) {
+                        $old->update(['status' => 'cancelled']);
+                    }
+                }
+            }
+        }
+
+        if ($user->suspended_until && $now->lessThan($user->suspended_until)) {
+            $tanggalBebas = Carbon::parse($user->suspended_until)->translatedFormat('d F Y H:i');
+            return redirect()->route('booking.index')
+                ->with('show_suspend_modal', $tanggalBebas);
+        }
+
+        $potensiMangkir = Booking::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->whereNull('confirmed_at')
+            ->with('jadwals')
+            ->get();
+
+        $listTanggalMangkir = [];
+
+        foreach ($potensiMangkir as $b) {
+            $jadwal = $b->jadwals->first();
+            if ($jadwal) {
+                try {
+                    $waktuSelesai = Carbon::parse(
+                        $jadwal->tanggal . ' ' . $jadwal->jam_selesai,
+                        'Asia/Jakarta'
+                    );
+
+                    if ($waktuSelesai->lessThan($now)) {
+                        $listTanggalMangkir[] = $waktuSelesai;
+                    }
+                } catch (\Exception $e) {
+                    continue;
+                }
+            }
+        }
+
+        $jumlahMangkir = count($listTanggalMangkir);
+
+        if ($jumlahMangkir >= 3) {
+            usort($listTanggalMangkir, function ($a, $b) {
+                return $b->timestamp - $a->timestamp;
+            });
+
+            $tanggalTerakhirMangkir = $listTanggalMangkir[0];
+            $suspendedUntil = $tanggalTerakhirMangkir->copy()->addMonth();
+
+            $user->update([
+                'missed_attendance_count' => $jumlahMangkir,
+                'suspended_until' => $suspendedUntil
+            ]);
+
+            if ($now->lessThan($suspendedUntil)) {
+                $tanggalBebas = $suspendedUntil->translatedFormat('d F Y');
+                return redirect()->route('booking.index')
+                    ->with('show_suspend_modal', $tanggalBebas);
+            }
+        }
+
+        if (!$user->hasVerifiedEmail()) {
             return redirect()->route('booking.index', ['lapangan' => $lapangan->nama])
                 ->with('email_unverified', true);
         }
@@ -72,8 +155,13 @@ class BookingController extends Controller
                 ->with('error', 'Maksimal durasi booking hanya boleh 3 jam.');
         }
 
-        $isConflict = $this->checkConflict($lapangan->id, $tanggal, $jam_mulai, $jam_selesai);
-        
+        $isConflict = $this->checkConflict(
+            $lapangan->id,
+            $tanggal,
+            $jam_mulai,
+            $jam_selesai
+        );
+
         if ($isConflict) {
             return redirect()->route('booking.index', ['lapangan' => $lapangan->nama])
                 ->with('error', 'Jam yang Anda pilih sudah terisi. Silakan pilih jam lain.');
@@ -81,9 +169,18 @@ class BookingController extends Controller
 
         return view('booking.create', compact('lapangan', 'tanggal', 'jam_mulai', 'jam_selesai'));
     }
+
     public function store(Request $request, Lapangan $lapangan)
     {
-        if (!Auth::user()->hasVerifiedEmail()) {
+        $user = Auth::user();
+        $now = Carbon::now('Asia/Jakarta');
+
+        if ($user->suspended_until && $now->lessThan($user->suspended_until)) {
+            return redirect()->route('booking.index')
+                ->with('error', 'Akun Anda sedang ditangguhkan.');
+        }
+
+        if (!$user->hasVerifiedEmail()) {
             return back()->with('error', 'Harap verifikasi email Anda terlebih dahulu.');
         }
 
@@ -96,8 +193,10 @@ class BookingController extends Controller
         $tanggal = $request->tanggal;
         $jamMulai = $request->jam_mulai;
         $jamSelesai = $request->jam_selesai;
+
         $start = Carbon::createFromFormat('H:i', $jamMulai);
         $end = Carbon::createFromFormat('H:i', $jamSelesai);
+
         if ($start->diffInMinutes($end) > 180) {
             return back()->with('error', 'Maksimal durasi booking hanya boleh 3 jam.');
         }
@@ -130,7 +229,6 @@ class BookingController extends Controller
             ->with('success', 'Pemesanan berhasil diajukan!');
     }
 
-
     protected function fetchBookings(Lapangan $lapangan, $start, $end)
     {
         $jadwals = Jadwal::whereBetween('tanggal', [$start, $end])
@@ -144,7 +242,6 @@ class BookingController extends Controller
 
         foreach ($jadwals as $jadwal) {
             $booking = $jadwal->booking;
-
             if ($booking) {
                 $tanggal = $jadwal->tanggal;
                 $userName = $booking->user ? $booking->user->name : 'User Tidak Dikenal';
@@ -166,18 +263,22 @@ class BookingController extends Controller
     {
         $dates = [];
         $start = Carbon::today();
+
         for ($i = 0; $i < $days; $i++) {
             $dates[] = $start->copy()->addDays($i);
         }
+
         return $dates;
     }
 
     protected function generateTimeSlots($startHour, $endHour)
     {
         $timeSlots = [];
+
         for ($hour = $startHour; $hour < $endHour; $hour++) {
             $timeSlots[] = sprintf('%02d:00', $hour);
         }
+
         return $timeSlots;
     }
 

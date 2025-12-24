@@ -3,84 +3,86 @@
 @section('page_title', 'Admin / Kelola Booking')
 
 @section('content')
-<div class="flex-1 p-8 bg-gray-50 min-h-screen">
+<div class="flex-1 p-4 md:p-8 bg-gray-50 min-h-screen w-full max-w-full overflow-x-hidden">
     
-    <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="mb-6 md:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-1">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
                 Kelola Booking
             </h1>
-            <p class="text-sm text-gray-500">
+            <p class="text-xs md:text-sm text-gray-500">
                 Pantau dan kelola persetujuan peminjaman lapangan.
             </p>
         </div>
     </div>
 
-    <div class="mb-6 flex flex-wrap gap-3">
-        @php
-            $currentStatus = $status ?? 'pending';
-            $tabs = [
-                [
-                    'key' => 'pending', 
-                    'label' => 'Menunggu', 
-                    'active' => 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/30',
-                    'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
-                ],
-                [
-                    'key' => 'approved', 
-                    'label' => 'Disetujui', 
-                    'active' => 'bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/30',
-                    'icon' => 'M5 13l4 4L19 7'
-                ],
-                [
-                    'key' => 'rejected', 
-                    'label' => 'Ditolak', 
-                    'active' => 'bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/30',
-                    'icon' => 'M6 18L18 6M6 6l12 12'
-                ],
-                [
-                    'key' => 'all', 
-                    'label' => 'Semua', 
-                    'active' => 'bg-gray-600 text-white border-gray-600 shadow-lg shadow-gray-500/30',
-                    'icon' => 'M4 6h16M4 10h16M4 14h16M4 18h16'
-                ],
-            ];
-        @endphp
+    <div class="mb-6 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:pb-0 hide-scroll w-[calc(100%+2rem)] md:w-full">
+        <div class="flex gap-3 min-w-max">
+            @php
+                $currentStatus = $status ?? 'pending';
+                $tabs = [
+                    [
+                        'key' => 'pending', 
+                        'label' => 'Menunggu', 
+                        'active' => 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/30',
+                        'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
+                    ],
+                    [
+                        'key' => 'approved', 
+                        'label' => 'Disetujui', 
+                        'active' => 'bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/30',
+                        'icon' => 'M5 13l4 4L19 7'
+                    ],
+                    [
+                        'key' => 'rejected', 
+                        'label' => 'Ditolak', 
+                        'active' => 'bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/30',
+                        'icon' => 'M6 18L18 6M6 6l12 12'
+                    ],
+                    [
+                        'key' => 'all', 
+                        'label' => 'Semua', 
+                        'active' => 'bg-gray-600 text-white border-gray-600 shadow-lg shadow-gray-500/30',
+                        'icon' => 'M4 6h16M4 10h16M4 14h16M4 18h16'
+                    ],
+                ];
+            @endphp
 
-        @foreach($tabs as $tab)
-            <a href="{{ route('admin.booking.index', ['status' => $tab['key']]) }}" 
-               class="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border flex items-center gap-2
-               {{ $currentStatus == $tab['key'] 
-                    ? $tab['active'] 
-                    : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50" }}">
-                
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $tab['icon'] }}"></path>
-                </svg>
-                
-                {{ $tab['label'] }}
-            </a>
-        @endforeach
+            @foreach($tabs as $tab)
+                <a href="{{ route('admin.booking.index', ['status' => $tab['key']]) }}" 
+                   class="px-4 md:px-5 py-2 md:py-2.5 rounded-xl text-xs md:text-sm font-semibold transition-all duration-200 border flex items-center gap-2 whitespace-nowrap
+                   {{ $currentStatus == $tab['key'] 
+                        ? $tab['active'] 
+                        : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50" }}">
+                    
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $tab['icon'] }}"></path>
+                    </svg>
+                    
+                    {{ $tab['label'] }}
+                </a>
+            @endforeach
+        </div>
     </div>
 
-    <div class="bg-white shadow-xl shadow-indigo-500/5 rounded-2xl border border-gray-100 overflow-hidden">
+    <div class="bg-white md:shadow-xl md:shadow-indigo-500/5 rounded-2xl border border-gray-100 overflow-hidden bg-transparent md:bg-white border-none md:border-solid">
         
         @if (session('status'))
-            <div class="bg-emerald-50 text-emerald-700 p-4 text-sm font-medium border-b border-emerald-100 flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div class="bg-emerald-50 text-emerald-700 p-4 text-sm font-medium border-b border-emerald-100 flex items-center gap-2 rounded-xl mb-4 md:mb-0 md:rounded-none">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 {{ session('status') }}
             </div>
         @endif
 
         @if ($bookings->isEmpty())
-            <div class="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <div class="flex flex-col items-center justify-center py-16 px-4 text-center bg-white rounded-2xl border border-gray-100 md:border-none">
                 <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
                     <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                 </div>
                 <p class="text-gray-500 font-medium">Tidak ada data booking dengan status ini.</p>
             </div>
         @else
-            <div class="overflow-x-auto">
+            <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-100">
                     <thead class="bg-gray-50">
                         <tr>
@@ -184,8 +186,84 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="md:hidden space-y-4">
+                @foreach ($bookings as $booking)
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                        <div class="flex justify-between items-start mb-3 border-b border-gray-50 pb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+                                    @if(Str::contains($booking->lapangan->nama ?? '', 'Futsal')) ⚽ 
+                                    @elseif(Str::contains($booking->lapangan->nama ?? '', 'Basket')) 🏀 
+                                    @elseif(Str::contains($booking->lapangan->nama ?? '', 'Voli')) 🏐 
+                                    @else 🏸 @endif
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900 text-sm">{{ $booking->lapangan->nama ?? 'Unknown' }}</h3>
+                                    <p class="text-xs text-gray-500">
+                                        {{ $booking->user->name ?? 'User Unknown' }}
+                                    </p>
+                                </div>
+                            </div>
+                            @php
+                                $statusStyles = match($booking->status) {
+                                    'approved' => 'bg-emerald-100 text-emerald-700',
+                                    'pending' => 'bg-amber-100 text-amber-700',
+                                    'rejected' => 'bg-rose-100 text-rose-700',
+                                    default => 'bg-gray-100 text-gray-700'
+                                };
+                            @endphp
+                            <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wide {{ $statusStyles }}">
+                                {{ $booking->status }}
+                            </span>
+                        </div>
+
+                        <div class="bg-gray-50/80 rounded-xl p-3 mb-3">
+                            <p class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Jadwal Main</p>
+                            @if($booking->jadwals->isNotEmpty())
+                                @foreach($booking->jadwals as $jadwal)
+                                    <div class="flex items-center justify-between text-sm mb-1 last:mb-0">
+                                        <span class="font-medium text-gray-700">
+                                            {{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('d M Y') }}
+                                        </span>
+                                        <span class="font-mono text-gray-500 bg-white px-2 py-0.5 rounded border border-gray-100 text-xs">
+                                            {{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}
+                                        </span>
+                                    </div>
+                                @endforeach
+                            @else
+                                <span class="text-xs text-red-400 italic">Data jadwal hilang</span>
+                            @endif
+                        </div>
+
+                        @if ($currentStatus === 'pending')
+                            <div class="grid grid-cols-2 gap-3 pt-1">
+                                <form id="mobile-approve-form-{{ $booking->id }}" method="POST" action="{{ route('admin.booking.update_status', ['booking' => $booking->id, 'status' => 'approved']) }}">
+                                    @csrf @method('PATCH')
+                                    <button type="button" 
+                                        onclick="confirmAction('mobile-approve-form-{{ $booking->id }}', '{{ $booking->lapangan->nama ?? 'Lapangan' }}', 'setujui')"
+                                        class="w-full py-2.5 rounded-xl bg-emerald-50 text-emerald-600 font-semibold text-sm hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-center gap-2 border border-emerald-100">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        Setujui
+                                    </button>
+                                </form>
+
+                                <form id="mobile-reject-form-{{ $booking->id }}" method="POST" action="{{ route('admin.booking.update_status', ['booking' => $booking->id, 'status' => 'rejected']) }}">
+                                    @csrf @method('PATCH')
+                                    <button type="button" 
+                                        onclick="confirmAction('mobile-reject-form-{{ $booking->id }}', '{{ $booking->lapangan->nama ?? 'Lapangan' }}', 'tolak')"
+                                        class="w-full py-2.5 rounded-xl bg-rose-50 text-rose-600 font-semibold text-sm hover:bg-rose-600 hover:text-white transition-all flex items-center justify-center gap-2 border border-rose-100">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        Tolak
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
             
-            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
+            <div class="px-6 py-4 border-t border-gray-100 bg-white md:bg-gray-50/50 rounded-b-2xl md:rounded-none">
                 {{ $bookings->links() }}
             </div>
         @endif
@@ -221,4 +299,14 @@
         });
     }
 </script>
+<style>
+    /* Utility class untuk menyembunyikan scrollbar tapi tetap bisa scroll */
+    .hide-scroll::-webkit-scrollbar {
+        display: none;
+    }
+    .hide-scroll {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
 @endpush

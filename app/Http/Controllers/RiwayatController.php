@@ -70,7 +70,7 @@ class RiwayatController extends Controller
         }
 
         $pdf = Pdf::loadView('pdf.pdf_booking', compact('booking'));
-        
+
         return $pdf->download('PDF Booking SAC' . '.pdf');
     }
 
@@ -78,7 +78,7 @@ class RiwayatController extends Controller
     {
         $request->validate([
             'start_date' => 'required|date',
-            'end_date'   => 'required|date|after_or_equal:start_date',
+            'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
         $startDate = $request->start_date;

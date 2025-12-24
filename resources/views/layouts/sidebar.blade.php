@@ -7,22 +7,36 @@
         }
     </style>
 
-    <div class="flex items-center justify-between p-4 h-20">
-        <div x-show="sidebarOpen" class="flex-1 flex justify-center">
+    {{-- HEADER SECTION --}}
+    <div class="flex items-center justify-between p-4 h-20 shrink-0">
+        
+        {{-- Logo --}}
+        <div x-show="sidebarOpen" class="flex-1 flex justify-center transition-opacity duration-200">
             <img src="{{ asset('asset/images/logo-umy-sac-transparan-01.png') }}" 
                  alt="SAC Logo" class="h-10 w-auto object-contain">
         </div>
 
+        {{-- Desktop Toggle Button (Hanya muncul di Desktop) --}}
         <button @click="toggleSidebar()" 
-                class="p-2 rounded hover:bg-gray-300 focus:outline-none transition-colors"
-                :class="!sidebarOpen ? 'mx-auto' : ''">
+                class="hidden lg:block p-2 rounded hover:bg-gray-300 focus:outline-none transition-colors"
+                :class="!sidebarOpen ? 'mx-auto' : ''"
+                title="Toggle Sidebar">
             <svg class="w-6 h-6 stroke-current text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                       d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
         </button>
+
+        {{-- Mobile Close Button (Hanya muncul di Mobile) --}}
+        <button @click="mobileMenuOpen = false" 
+                class="lg:hidden p-2 rounded hover:bg-gray-100 text-gray-500 focus:outline-none ml-auto">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
     </div>
 
+    {{-- MENU LINKS --}}
     <div class="w-full px-3 mt-2 flex-1 overflow-y-auto overflow-x-hidden space-y-1"
          style="scrollbar-width: none; -ms-overflow-style: none;">
         
@@ -79,6 +93,7 @@
         </a>
     </div>
 
+    {{-- FOOTER / USER SECTION --}}
     <div class="mt-auto w-full px-3 pb-4 pt-4 space-y-1 border-t border-gray-200">
         
         <form method="POST" action="{{ route('logout') }}">

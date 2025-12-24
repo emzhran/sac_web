@@ -6,69 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Register - Student Activity Center</title>
+    <title>Register - Sport Center UMY</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-        /* Hilangkan ikon mata bawaan browser Edge/IE agar tidak double */
         input::-ms-reveal,
         input::-ms-clear {
             display: none;
         }
     </style>
-    
 </head>
 
 <body class="antialiased bg-white">
 
     <div class="flex flex-col md:flex-row min-h-screen">
 
-        <div
-            class="bg-purple-500 text-white p-8 md:p-12 md:w-1/2 relative overflow-hidden flex flex-col justify-between">
+        <div class="relative overflow-hidden flex flex-col justify-between p-8 md:p-12 md:w-1/2 text-white bg-cover bg-center bg-no-repeat"
+            style="background-image: url('{{ asset('asset/images/login.jpeg') }}');">
 
-            <div class="z-10 relative">
+            <div class="absolute inset-0 bg-blue-900/60 z-0"></div>
+
+            <div class="z-10 relative h-full flex flex-col justify-between">
                 <div class="mb-6 bg-white/20 w-fit p-2 rounded-lg backdrop-blur-sm">
                     <img src="{{ asset('asset/images/logo-umy-sac-transparan-01.png') }}" alt="Logo"
                         class="h-12 w-auto">
                 </div>
 
-                <div class="mt-10 md:mt-20">
-                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Join Us</h1>
+                <div class="mt-auto mb-10 md:mb-0">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Daftar Akun Terlebih Dahulu</h1>
                     <h2 class="text-2xl md:text-3xl font-semibold mb-6">Create Your Account</h2>
                     <p class="max-w-md opacity-90 leading-relaxed">
-                        Bergabunglah dengan Student Activity Center. Daftarkan diri Anda untuk mulai meminjam fasilitas
+                        Bergabunglah dengan Sport center UMY. Daftarkan diri Anda untuk mulai meminjam fasilitas
                         dan mengakses layanan kemahasiswaan.
                     </p>
                 </div>
             </div>
-
-            <div class="absolute right-0 top-1/3 transform translate-x-1/4 pointer-events-none">
-                <div class="relative w-64 h-64">
-                    <svg class="text-white/20 absolute top-10 left-10 w-16 h-16" xmlns="http://www.w3.org/2000/svg"
-                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" viewBox="0 0 24 24">
-                        <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-                    </svg>
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <div class="relative w-40 h-40">
-                            <svg class="text-orange-400 w-40 h-40 transform rotate-45"
-                                xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path
-                                    d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
-                                <path
-                                    d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <svg class="text-white/20 absolute bottom-10 left-10 w-24 h-24 pointer-events-none"
-                xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-            </svg>
         </div>
 
         <div class="p-8 md:p-12 md:w-1/2 flex items-center justify-center bg-white relative overflow-y-auto">
@@ -77,12 +50,12 @@
                 <div class="absolute top-8 right-8 text-right">
                     <span class="text-gray-500 text-sm">Sudah punya akun?</span>
                     <a href="{{ route('login') }}"
-                        class="text-purple-500 font-medium hover:underline text-sm ml-1">Login</a>
+                        class="text-blue-600 font-medium hover:underline text-sm ml-1">Login</a>
                 </div>
 
                 <div class="mb-8 mt-8 md:mt-0">
                     <p class="text-gray-600 mb-2 font-medium">
-                        Welcome to <span class="text-purple-500 font-bold">SAC UMY</span>
+                        Welcome to <span class="text-blue-600 font-bold">SAC UMY</span>
                     </p>
                     <h1 class="text-4xl font-bold text-gray-900">Registrasi Akun</h1>
                 </div>
@@ -93,7 +66,7 @@
                     <div>
                         <x-input-label for="name" :value="__('Nama Lengkap')" class="text-gray-700" />
                         <x-text-input id="name"
-                            class="block mt-1 w-full h-12 border-gray-300 focus:ring-purple-500 focus:border-purple-500 rounded-md"
+                            class="block mt-1 w-full h-12 border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md"
                             type="text" name="name" :value="old('name')" required autofocus autocomplete="name"
                             placeholder="Nama Lengkap" />
                         <x-input-error :messages="$errors->get('name')" class="mt-1" />
@@ -102,7 +75,7 @@
                     <div>
                         <x-input-label for="nim" :value="__('NIM')" class="text-gray-700" />
                         <x-text-input id="nim"
-                            class="block mt-1 w-full h-12 border-gray-300 focus:ring-purple-500 focus:border-purple-500 rounded-md"
+                            class="block mt-1 w-full h-12 border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md"
                             type="text" name="nim" :value="old('nim')" required autocomplete="nim" inputmode="numeric"
                             pattern="[0-9]*" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                             placeholder="Nomor Induk Mahasiswa" />
@@ -113,7 +86,7 @@
                         <div>
                             <x-input-label for="fakultas" :value="__('Fakultas')" class="text-gray-700" />
                             <select id="fakultas" name="fakultas" required
-                                class="block mt-1 w-full h-12 border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-md shadow-sm text-gray-700">
+                                class="block mt-1 w-full h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm text-gray-700">
                                 <option value="" disabled selected>Pilih Fakultas</option>
                                 <option value="Teknik" @selected(old('fakultas') == 'Teknik')>Teknik</option>
                                 <option value="Agama Islam" @selected(old('fakultas') == 'Agama Islam')>Agama Islam
@@ -137,7 +110,7 @@
                         <div>
                             <x-input-label for="prodi" :value="__('Program Studi')" class="text-gray-700" />
                             <select id="prodi" name="prodi" required disabled
-                                class="block mt-1 w-full h-12 border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-md shadow-sm text-gray-700 bg-gray-50">
+                                class="block mt-1 w-full h-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm text-gray-700 bg-gray-50">
                                 <option value="" disabled selected>Pilih Program Studi</option>
                             </select>
                             <x-input-error :messages="$errors->get('prodi')" class="mt-1" />
@@ -147,7 +120,7 @@
                     <div>
                         <x-input-label for="email" :value="__('Email')" class="text-gray-700" />
                         <x-text-input id="email"
-                            class="block mt-1 w-full h-12 border-gray-300 focus:ring-purple-500 focus:border-purple-500 rounded-md"
+                            class="block mt-1 w-full h-12 border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md"
                             type="email" name="email" :value="old('email')" required autocomplete="username"
                             placeholder="user@gmail.com" />
                         <x-input-error :messages="$errors->get('email')" class="mt-1" />
@@ -157,12 +130,12 @@
                         <x-input-label for="password" :value="__('Password')" class="text-gray-700" />
                         <div class="relative mt-1">
                             <x-text-input id="password"
-                                class="block w-full h-12 pr-10 border-gray-300 focus:ring-purple-500 focus:border-purple-500 rounded-md transition"
+                                class="block w-full h-12 pr-10 border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md transition"
                                 ::type="show ? 'text' : 'password'" name="password" required autocomplete="new-password"
                                 placeholder="Min. 8 Karakter" />
 
                             <button type="button" @click="show = !show"
-                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-purple-600 focus:outline-none">
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-blue-600 focus:outline-none">
                                 <svg x-show="!show" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -188,12 +161,12 @@
                             class="text-gray-700" />
                         <div class="relative mt-1">
                             <x-text-input id="password_confirmation"
-                                class="block w-full h-12 pr-10 border-gray-300 focus:ring-purple-500 focus:border-purple-500 rounded-md transition"
+                                class="block w-full h-12 pr-10 border-gray-300 focus:ring-blue-500 focus:border-blue-500 rounded-md transition"
                                 ::type="show ? 'text' : 'password'" name="password_confirmation" required
                                 autocomplete="new-password" placeholder="Ulangi Password" />
 
                             <button type="button" @click="show = !show"
-                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-purple-600 focus:outline-none">
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-blue-600 focus:outline-none">
                                 <svg x-show="!show" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -213,7 +186,7 @@
 
                     <div class="pt-2">
                         <button type="submit"
-                            class="w-full h-12 bg-purple-500 hover:bg-pink-600 text-white font-bold rounded-md transition duration-200 shadow-sm text-lg">
+                            class="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md transition duration-200 shadow-sm text-lg">
                             Daftar
                         </button>
                     </div>
@@ -247,7 +220,7 @@
 
                 if (selectedFakultas && prodiData[selectedFakultas]) {
                     prodiSelect.disabled = false;
-                    prodiSelect.classList.remove('bg-gray-50'); // Hilangkan efek abu-abu saat aktif
+                    prodiSelect.classList.remove('bg-gray-50');
 
                     const prodiList = prodiData[selectedFakultas];
                     prodiList.forEach(prodi => {
@@ -261,7 +234,7 @@
                     });
                 } else {
                     prodiSelect.disabled = true;
-                    prodiSelect.classList.add('bg-gray-50'); // Tambah efek abu-abu saat disabled
+                    prodiSelect.classList.add('bg-gray-50');
                 }
             }
 
