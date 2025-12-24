@@ -15,7 +15,7 @@ class RiwayatController extends Controller
     public function index(Request $request)
     {
         $riwayats = Booking::where('user_id', Auth::id())
-            ->with(['lapangan', 'jadwals']) 
+            ->with(['lapangan', 'jadwals'])
             ->orderByDesc('created_at')
             ->paginate(10);
 
@@ -47,7 +47,7 @@ class RiwayatController extends Controller
     public function destroy($id)
     {
         $booking = Booking::findOrFail($id);
-        
+
         if (!auth()->user()->is_admin && $booking->user_id !== auth()->id()) {
             abort(403, 'Unauthorized action.');
         }
@@ -62,7 +62,7 @@ class RiwayatController extends Controller
         $booking = Booking::with(['user', 'lapangan', 'jadwals'])->findOrFail($id);
 
         if ($booking->user_id !== Auth::id()) {
-             abort(403, 'Anda tidak memiliki akses ke pdf ini.');
+            abort(403, 'Anda tidak memiliki akses ke pdf ini.');
         }
 
         if ($booking->status !== 'approved') {
@@ -84,10 +84,10 @@ class RiwayatController extends Controller
         $startDate = $request->start_date;
         $endDate = $request->end_date;
 
-        return Excel::download(new BookingExport($startDate, $endDate), 'Laporan_Booking_'.$startDate.'_sd_'.$endDate.'.xlsx');
+        return Excel::download(new BookingExport($startDate, $endDate), 'Laporan_Booking_' . $startDate . '_sd_' . $endDate . '.xlsx');
     }
 
-    public function confirmPresence($id)
+    public function confirmPresence(Request $request, $id)
     {
         $booking = Booking::findOrFail($id);
 
@@ -99,6 +99,25 @@ class RiwayatController extends Controller
             return redirect()->back()->with('error', 'Booking belum disetujui.');
         }
 
+        $request->validate([
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+        ]);
+        $umyLat = -7.811345;
+        $umyLng = 110.320745;
+
+        $userLat = $request->latitude;
+        $userLng = $request->longitude;
+
+        $theta = $userLng - $umyLng;
+        $dist = sin(deg2rad($userLat)) * sin(deg2rad($umyLat)) +  cos(deg2rad($userLat)) * cos(deg2rad($umyLat)) * cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
+        $miles = $dist * 60 * 1.1515;
+        $km = $miles * 1.609344;
+        if ($km > 0.5) {
+            return redirect()->back()->with('error', 'Gagal konfirmasi! Lokasi Anda terdeteksi sejauh ' . number_format($km, 2) . ' KM dari area kampus (Maks 0.5 KM).');
+        }
         $booking->update([
             'confirmed_at' => Carbon::now()
         ]);
@@ -107,14 +126,14 @@ class RiwayatController extends Controller
     }
 
     public function show($id)
-{
+    {
 
-    $booking = Booking::with(['lapangan', 'jadwals', 'user'])->findOrFail($id);
- 
-    if (auth()->user()->role !== 'admin' && $booking->user_id !== auth()->id()) {
-        abort(403);
+        $booking = Booking::with(['lapangan', 'jadwals', 'user'])->findOrFail($id);
+
+        if (auth()->user()->role !== 'admin' && $booking->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return view('riwayat.show', compact('booking'));
     }
-
-    return view('riwayat.show', compact('booking'));
-}
 }
