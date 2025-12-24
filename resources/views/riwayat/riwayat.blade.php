@@ -462,6 +462,9 @@
         if (distance <= MAX_DISTANCE_KM) {
             statusText.textContent = `✅ Lokasi terverifikasi (Jarak: ${jarakTerbaca} km). Menyimpan...`;
             statusText.className = "mt-3 text-sm font-bold text-green-700 bg-green-100 p-2 rounded border border-green-300";
+            document.getElementById('inputLat').value = userLat;
+            document.getElementById('inputLng').value = userLng;
+
             setTimeout(() => { document.getElementById('confirmForm').submit(); }, 1000);
         } else {
             closeConfirmModal();
