@@ -1,5 +1,5 @@
 <div class="flex flex-col h-full bg-white text-gray-700 transition-all duration-300 shadow-xl rounded-2xl overflow-hidden"
-     :class="sidebarOpen ? 'w-64' : 'w-20'">
+    :class="sidebarOpen ? 'w-64' : 'w-20'">
 
     <style>
         .overflow-y-auto::-webkit-scrollbar {
@@ -7,16 +7,12 @@
         }
     </style>
 
-    {{-- HEADER SECTION --}}
     <div class="flex items-center justify-between p-4 h-20 shrink-0">
-        
-        {{-- Logo --}}
         <div x-show="sidebarOpen" class="flex-1 flex justify-center transition-opacity duration-200">
             <img src="{{ asset('asset/images/logo-umy-sac-transparan-01.png') }}" 
                  alt="SAC Logo" class="h-10 w-auto object-contain">
         </div>
 
-        {{-- Desktop Toggle Button --}}
         <button @click="toggleSidebar()" 
                 class="hidden lg:block p-2 rounded hover:bg-gray-300 focus:outline-none transition-colors"
                 :class="!sidebarOpen ? 'mx-auto' : ''"
@@ -27,7 +23,6 @@
             </svg>
         </button>
 
-        {{-- Mobile Close Button --}}
         <button @click="mobileMenuOpen = false" 
                 class="lg:hidden p-2 rounded hover:bg-gray-100 text-gray-500 focus:outline-none ml-auto">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,7 +31,6 @@
         </button>
     </div>
 
-    {{-- MENU LINKS --}}
     <div class="w-full px-3 mt-2 flex-1 overflow-y-auto overflow-x-hidden space-y-1"
          style="scrollbar-width: none; -ms-overflow-style: none;">
         
@@ -107,9 +101,9 @@
             <span x-show="sidebarOpen" class="ml-3 text-sm font-medium whitespace-nowrap">Riwayat</span>
         </a>
 
-        <a href="{{ route('admin.kelolapengguna.index') }}"
+        <a href="{{ route('admin.users.index') }}"
            class="flex items-center w-full h-12 px-3 rounded-xl transition-all duration-200 group
-           {{ request()->routeIs('admin.kelolapengguna.index') ? 'bg-indigo-500 text-white shadow-md' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900' }}"
+           {{ request()->routeIs('admin.users.*') ? 'bg-indigo-500 text-white shadow-md' : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900' }}"
            :class="!sidebarOpen ? 'justify-center' : ''">
 
             <svg class="w-5 h-5 stroke-current shrink-0" fill="none" viewBox="0 0 24 24">
@@ -121,7 +115,6 @@
         </a>
     </div>
 
-    {{-- FOOTER / USER SECTION --}}
     <div class="mt-auto w-full px-3 pb-4 pt-4 space-y-1 border-t border-gray-200">
         
         <form method="POST" action="{{ route('logout') }}">

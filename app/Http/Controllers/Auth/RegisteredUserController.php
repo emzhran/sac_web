@@ -38,7 +38,7 @@ class RegisteredUserController extends Controller
             'password' => [
                 'required', 
                 'confirmed', 
-                Rules\Password::min(8)->mixedCase()->numbers()->symbols(), 
+                Rules\Password::min(8)->mixedCase()->numbers(), 
             ],
         
         ], [ 
@@ -54,7 +54,6 @@ class RegisteredUserController extends Controller
             'password.min' => 'Kata sandi minimal harus :min karakter.',
             'password.mixed_case' => 'Kata sandi harus mengandung minimal satu huruf kapital dan satu huruf kecil.',
             'password.numbers' => 'Kata sandi harus mengandung minimal satu angka.',
-            'password.symbols' => 'Kata sandi harus mengandung minimal satu karakter khusus.',
             'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
             'password.required' => 'Kata sandi wajib diisi.',
             'nim.regex' => 'Nomor Induk Mahasiswa (NIM) harus berupa angka.', 

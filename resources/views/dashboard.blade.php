@@ -10,7 +10,6 @@
     
     <div class="max-w-7xl mx-auto">
 
-        {{-- Header Section --}}
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div>
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
@@ -19,7 +18,6 @@
                 <p class="text-sm text-gray-500">Selamat datang kembali di Sport Activity Center.</p>
             </div>
 
-            {{-- Button Header: Mengarah ke halaman Jadwal Utama --}}
             <a href="{{ route('booking.index') }}" class="w-full md:w-auto flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transform hover:-translate-y-0.5">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -28,10 +26,8 @@
             </a>
         </div>
 
-        {{-- Stats Grid --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             
-            {{-- Card 1: Jadwal Main --}}
             <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/20 p-6 rounded-2xl relative overflow-hidden group hover:shadow-xl transition-all duration-300">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
                 
@@ -64,8 +60,6 @@
                     @endif
                 </div>
             </div>
-
-            {{-- Card 2: Pending --}}
             <div class="bg-white shadow-md p-6 rounded-2xl border border-gray-100 relative overflow-hidden group hover:shadow-lg transition-all duration-300">
                 <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-50 to-transparent rounded-full -mr-10 -mt-10"></div>
                 <div class="relative z-10">
@@ -86,8 +80,6 @@
                     <p class="text-3xl md:text-4xl font-bold text-gray-900">{{ $pendingBookings }} <span class="text-base font-normal text-gray-400">Booking</span></p>
                 </div>
             </div>
-
-            {{-- Card 3: Total History --}}
             <div class="bg-white shadow-md p-6 rounded-2xl border border-gray-100 relative overflow-hidden group hover:shadow-lg transition-all duration-300">
                 <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-50 to-transparent rounded-full -mr-10 -mt-10"></div>
                 <div class="relative z-10">
@@ -104,14 +96,17 @@
             </div>
         </div>
 
-        {{-- Main Layout --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {{-- Left Column: Riwayat Table --}}
             <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white shadow-lg shadow-gray-100 rounded-2xl border border-gray-100 overflow-hidden">
                     <div class="p-6 border-b border-gray-50 flex justify-between items-center bg-white">
-                        <h3 class="text-lg font-bold text-gray-900">Riwayat Pengajuan</h3>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900">Riwayat Pengajuan</h3>
+                            <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                                <svg class="w-3 h-3 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Wajib konfirmasi 1 jam sebelum main
+                            </p>
+                        </div>
                         <a href="{{ route('riwayat.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-700">Lihat Semua &rarr;</a>
                     </div>
                     
@@ -121,15 +116,29 @@
                                 <tr>
                                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Fasilitas</th>
                                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Waktu</th>
-                                    <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status & Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100 bg-white">
                                 @forelse($myBookings->take(5) as $booking)
-                                <tr class="hover:bg-gray-50/80 transition-colors">
+                                    
+                                    @php
+                                        $jadwalPertama = $booking->jadwals->first();
+                                        $waktuMulai = \Carbon\Carbon::parse(
+                                            $jadwalPertama->tanggal . ' ' . $jadwalPertama->jam_mulai, 
+                                            'Asia/Jakarta'
+                                        );
+                                        $sekarang = \Carbon\Carbon::now('Asia/Jakarta');
+                                        $selisihJam = $sekarang->diffInHours($waktuMulai, false);
+                                        $isUpcoming = $booking->status == 'approved' && $waktuMulai->isFuture();
+                                        $isUrgent = $isUpcoming && $selisihJam <= 24;
+                                        $showVerifyButton = $isUrgent; 
+                                    @endphp
+
+                                <tr class="transition-colors {{ $isUrgent ? 'bg-amber-50 hover:bg-amber-100' : 'hover:bg-gray-50/80' }}">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 text-lg flex-shrink-0">
+                                            <div class="w-10 h-10 rounded-lg {{ $isUrgent ? 'bg-amber-100 text-amber-600' : 'bg-indigo-50 text-indigo-600' }} flex items-center justify-center text-lg flex-shrink-0">
                                                 @if(Str::contains($booking->lapangan->nama, 'Futsal')) ⚽ 
                                                 @elseif(Str::contains($booking->lapangan->nama, 'Basket')) 🏀 
                                                 @elseif(Str::contains($booking->lapangan->nama, 'Voli')) 🏐 
@@ -145,24 +154,41 @@
                                         <div class="flex flex-col">
                                             @foreach($booking->jadwals as $jadwal)
                                                 <span class="text-sm text-gray-900 font-medium">{{ \Carbon\Carbon::parse($jadwal->tanggal)->translatedFormat('d M Y') }}</span>
-                                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded w-fit mt-1">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }}</span>
+                                                <span class="text-xs text-gray-500 bg-white/50 border border-gray-200 px-2 py-0.5 rounded w-fit mt-1">{{ $jadwal->jam_mulai }} - {{ $jadwal->jam_selesai }} WIB</span>
+                                                
+                                                @if($isUrgent)
+                                                    <span class="text-[10px] text-amber-600 font-bold mt-1 animate-pulse">
+                                                        {{ $selisihJam < 1 ? 'Segera!' : 'Main dalam ' . round($selisihJam) . ' jam' }}
+                                                    </span>
+                                                @endif
                                             @endforeach
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        @if($booking->status == 'pending')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700 border border-yellow-200">
-                                                Menunggu
-                                            </span>
-                                        @elseif($booking->status == 'approved')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
-                                                Disetujui
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700 border border-rose-200">
-                                                Ditolak
-                                            </span>
-                                        @endif
+                                        <div class="flex flex-col items-center gap-2">
+                                            @if($booking->status == 'pending')
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700 border border-yellow-200">
+                                                    Menunggu
+                                                </span>
+                                            @elseif($booking->status == 'approved')
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                                                    Disetujui
+                                                </span>
+                                                @if($showVerifyButton)
+                                                    <a href="{{ route('riwayat.index') }}" class="group relative w-full inline-flex justify-center items-center gap-1 px-3 py-1.5 bg-indigo-600 text-white text-xs font-bold rounded-lg shadow-sm hover:bg-indigo-700 transition-all focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer">
+                                                        <span class="absolute right-0 top-0 -mt-1 -mr-1 flex h-3 w-3">
+                                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                                        </span>
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                        Konfirmasi Hadir
+                                                    </a>
+                                                @endif
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700 border border-rose-200">
+                                                    Ditolak
+                                                </span>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty
@@ -184,19 +210,14 @@
                 </div>
             </div>
 
-            {{-- Right Column: Facilities & Help --}}
             <div class="space-y-6">
-                
-                {{-- Facility List --}}
                 <div class="bg-transparent">
                     <div class="flex items-center justify-between mb-4 px-1">
                         <h3 class="text-lg font-bold text-gray-900">Fasilitas Tersedia</h3>
-                        <span class="text-xs text-gray-500 bg-white px-2 py-1 rounded border">Update Terbaru</span>
                     </div>
                     
                     <div class="space-y-3">
                         @foreach($fields as $field)
-                        {{-- PERBAIKAN: Mengarah ke booking.index dengan filter nama lapangan --}}
                         <a href="{{ route('booking.index', ['lapangan' => $field->nama]) }}" class="block bg-white shadow-sm rounded-xl p-4 border border-gray-100 hover:shadow-md hover:border-indigo-100 hover:-translate-y-1 transition-all duration-200 group">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-4">
@@ -223,32 +244,12 @@
                         @endforeach
                     </div>
                 </div>
-
-                {{-- Help Card --}}
-                <div class="bg-gradient-to-br from-indigo-900 to-indigo-800 rounded-2xl p-6 text-white relative overflow-hidden shadow-lg">
-                    <div class="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -mr-12 -mt-12"></div>
-                    <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full -ml-8 -mb-8"></div>
-                    
-                    <div class="relative z-10">
-                        <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        </div>
-                        <h4 class="font-bold text-lg mb-1">Butuh Bantuan?</h4>
-                        <p class="text-indigo-200 text-sm mb-5 leading-relaxed">Jika mengalami kendala saat booking atau pembayaran, hubungi admin.</p>
-                        
-                        <a href="https://wa.me/6281234567890" target="_blank" class="w-full bg-white text-indigo-900 font-bold py-2.5 rounded-xl hover:bg-indigo-50 transition-colors text-sm shadow-md flex justify-center items-center gap-2">
-                            <span>Hubungi Admin</span>
-                        </a>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
 </div>
 
 @if(session('email_unverified'))
-    {{-- Kode modal verifikasi email tetap sama --}}
     @include('components.email-verification-modal') 
 @endif
 

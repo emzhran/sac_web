@@ -129,7 +129,7 @@ class JadwalController extends Controller
                 [
                     'email' => Str::slug($request->nama_pemesan_manual) . '_' . uniqid() . '@guest.com', 
                     'password' => Hash::make('password'),
-                    'role' => 'user'
+                    'role' => 'guest'
                 ]
             );
 

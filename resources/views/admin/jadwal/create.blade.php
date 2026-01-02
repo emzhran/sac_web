@@ -56,11 +56,11 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                Nama Pemesan
+                                Booking Lapangan
                             </label>
                             <input type="text" name="nama_pemesan_manual" id="nama_pemesan_manual" list="user_suggestions" 
                                 class="w-full border-gray-200 bg-gray-50 text-gray-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all placeholder-gray-400" 
-                                placeholder="Ketik nama pemesan..." required autocomplete="off">
+                                placeholder="Ketik nama UKM/Turnamen..." required autocomplete="off">
                             <datalist id="user_suggestions">
                                 @foreach($users as $user) 
                                     <option value="{{ $user->name }}">{{ $user->email }} ({{ $user->nim ?? '-' }})</option> 
@@ -166,8 +166,6 @@
     function updateButtonState() {
         let mulai = document.getElementById('jam_mulai').value;
         let selesai = document.getElementById('jam_selesai').value;
-
-        // Validasi jika jam mulai kosong (fallback)
         if(!mulai) return;
 
         let jamMulai = parseInt(mulai.split(':')[0]);
@@ -205,9 +203,7 @@
         }
     }
 
-    // Jalankan saat load
     window.onload = resetJamSelesai;
-    // Event listener 'change' dihapus karena input jam_mulai sekarang readonly
 
     document.getElementById('plusBtn').onclick = function() {
         let selesaiInput = document.getElementById('jam_selesai');
@@ -258,7 +254,7 @@
             title: 'Simpan Jadwal?',
             html: `
                 <div class="text-left bg-gray-50 p-4 rounded-lg text-sm mb-4 border border-gray-100">
-                    <p class="mb-2"><strong class="text-gray-700">Pemesan:</strong> ${nama}</p>
+                    <p class="mb-2"><strong class="text-gray-700">Nama:</strong> ${nama}</p>
                     <p class="mb-2"><strong class="text-gray-700">Lapangan:</strong> ${namaLapangan}</p>
                     <p class="mb-2"><strong class="text-gray-700">Tanggal:</strong> ${tanggalFormatted !== 'Invalid Date' ? tanggalFormatted : tanggalValue}</p>
                     <p><strong class="text-gray-700">Waktu:</strong> <span class="text-indigo-600 font-bold">${jamMulai} - ${jamSelesai}</span></p>

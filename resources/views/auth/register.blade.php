@@ -152,7 +152,7 @@
                         </div>
                         <x-input-error :messages="$errors->get('password')" class="mt-1" />
                         <p class="mt-1 text-xs text-gray-500">
-                            Gunakan angka, huruf kapital, dan karakter khusus (@#$%&*).
+                            Gunakan kombinasi huruf kapiltal, huruf kecil dan angka.
                         </p>
                     </div>
 

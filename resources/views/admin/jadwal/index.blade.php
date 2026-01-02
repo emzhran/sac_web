@@ -3,19 +3,14 @@
 
 @section('content')
 <div class="flex-1 p-4 md:p-8 bg-gray-50 min-h-screen">
-    
-    {{-- Header Section --}}
     <div class="mb-6 md:mb-8">
         <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
             Jadwal Pemanfaatan Lapangan
         </h1>
-        <p class="text-sm text-gray-500">View Administrator (7 Hari ke depan).</p>
+        <p class="text-sm text-gray-500">Jadwal 7 Hari ke depan.</p>
     </div>
 
-    {{-- Main Card --}}
     <div class="bg-white shadow-lg shadow-indigo-500/5 rounded-2xl border border-gray-100 p-4 md:p-6">
-        
-        {{-- Filter Lapangan (Horizontal Scroll di Mobile) --}}
         <div class="mb-6">
             <label class="text-sm font-medium text-gray-700 mb-3 block">Filter Lapangan:</label>
             <div class="flex overflow-x-auto pb-2 gap-3 no-scrollbar">
@@ -46,24 +41,17 @@
                 @endforeach
             </div>
         </div>
-
-        {{-- Hint untuk Mobile --}}
         <div class="md:hidden flex items-center justify-between text-xs text-gray-400 mb-2 px-1">
             <span>&larr; Geser tabel untuk lihat hari lain &rarr;</span>
         </div>
-
-        {{-- Container Tabel Responsif --}}
         <div class="relative rounded-xl border border-gray-200 bg-white overflow-hidden flex flex-col">
             <div class="overflow-x-auto scrollbar-hide">
                 <table class="w-full border-collapse">
                     <thead class="bg-gray-50">
                         <tr>
-                            {{-- Sticky Header Waktu --}}
                             <th scope="col" class="sticky left-0 z-20 w-20 min-w-[5rem] px-2 py-4 text-center text-xs font-bold text-gray-500 uppercase border-r border-b border-gray-200 bg-gray-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                                 Waktu
                             </th>
-                            
-                            {{-- Header Hari --}}
                             @foreach ($dates as $date)
                                 <th scope="col" class="min-w-[120px] px-1 py-4 text-center text-xs font-bold uppercase tracking-wider border-b border-gray-200
                                     {{ $date->isToday() ? 'bg-indigo-50 text-indigo-700' : 'text-gray-500' }}">
@@ -82,8 +70,6 @@
                                 $jamSelesai = sprintf('%02d:00', (int)substr($jamMulai, 0, 2) + 1);
                             @endphp
                             <tr class="group hover:bg-gray-50/30 transition-colors">
-                                
-                                {{-- Sticky Column Waktu --}}
                                 <td class="sticky left-0 z-10 px-2 py-3 text-center whitespace-nowrap text-xs font-bold text-gray-900 border-r border-gray-100 bg-white group-hover:bg-gray-50 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                                     {{ $jamMulai }}
                                     <div class="text-[10px] text-gray-400 font-normal mt-0.5">{{ $jamSelesai }}</div>
@@ -144,7 +130,7 @@
                                                class="group flex flex-col items-center justify-center w-full h-full rounded-md border border-transparent 
                                                       hover:bg-indigo-50 hover:border-indigo-200 transition-all cursor-pointer">
                                                 <span class="text-gray-300 text-lg group-hover:text-indigo-600 group-hover:font-bold leading-none">+</span>
-                                                <span class="text-[9px] text-gray-300 group-hover:text-indigo-600 font-medium">Add</span>
+                                                <span class="text-[9px] text-gray-300 group-hover:text-indigo-600 font-medium">Booking</span>
                                             </a>
                                         @endif
                                     </td>
@@ -156,20 +142,18 @@
             </div>
         </div>
 
-        {{-- Footer Note --}}
         <div class="mt-6 flex items-start gap-3 p-4 bg-amber-50 border border-amber-100 rounded-xl text-amber-800">
             <svg class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <div class="text-sm leading-relaxed">
-                <strong>Catatan Admin:</strong> Klik tombol <span class="text-indigo-600 font-bold">+</span> untuk menambahkan jadwal manual (blocking).
+                <strong>Catatan Admin:</strong> Klik tombol <span class="text-indigo-600 font-bold">+</span> untuk menambahkan jadwal.
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    /* Utility untuk menyembunyikan scrollbar tapi tetap bisa scroll */
     .no-scrollbar::-webkit-scrollbar {
         display: none;
     }

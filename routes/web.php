@@ -38,7 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/booking', [BookingController::class, 'index'])->name('booking.index');
     Route::get('/booking/{lapangan:id}/create', [BookingController::class, 'create'])->name('booking.create');
@@ -70,11 +70,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/riwayat/{id}/status', [RiwayatController::class, 'updateStatus'])->name('riwayat.updateStatus');
     Route::delete('/riwayat/{id}', [RiwayatController::class, 'destroy'])->name('riwayat.destroy');
     
-    Route::get('/users', function () {
-        return view('admin.users.index');
-    })->name('users.index');
+    Route::prefix('users')->name('users.')->controller(KelolaPenggunaController::class)->group(function() {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{user}/edit', 'edit')->name('edit');
+        Route::patch('/{user}', 'update')->name('update');
+        Route::delete('/{user}', 'destroy')->name('destroy');
+    });
 
-    Route::get('/kelolapengguna', [KelolaPenggunaController::class, 'index'])->name('kelolapengguna.index');
 });
 
 require __DIR__ . '/auth.php';

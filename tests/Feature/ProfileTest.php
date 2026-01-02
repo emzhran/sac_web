@@ -12,7 +12,7 @@ class ProfileTest extends TestCase
 
     public function test_profile_page_is_displayed(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'user']);
 
         $response = $this
             ->actingAs($user)
@@ -21,10 +21,16 @@ class ProfileTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_profile_information_can_be_updated(): void
+    public function test_user_role_cannot_update_profile_information(): void
     {
-        $user = User::factory()->create();
+        // Setup: User dengan data awal
+        $user = User::factory()->create([
+            'role' => 'user',
+            'name' => 'Original Name',
+            'email' => 'original@example.com'
+        ]);
 
+        // Action: Coba update ke /profile
         $response = $this
             ->actingAs($user)
             ->patch('/profile', [
@@ -32,68 +38,41 @@ class ProfileTest extends TestCase
                 'email' => 'test@example.com',
             ]);
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+        // Assert: Harus Forbidden (403) sesuai logika controller
+        $response->assertStatus(403); 
 
+        // Assert: Data di database TIDAK berubah
         $user->refresh();
-
-        $this->assertSame('Test User', $user->name);
-        $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
+        $this->assertSame('Original Name', $user->name);
+        $this->assertSame('original@example.com', $user->email);
     }
 
-    public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
+    public function test_admin_can_update_user_profile_information(): void
     {
-        $user = User::factory()->create();
+        // Setup: Admin dan User target
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create([
+            'role' => 'user',
+            'name' => 'Old Name',
+            'email' => 'old@example.com'
+        ]);
 
+        // Action: Admin melakukan update ke route admin (bukan /profile)
+        // Pastikan route '/admin/users/{id}' sudah didefinisikan di routes/web.php
         $response = $this
-            ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => $user->email,
+            ->actingAs($admin)
+            ->patch("/admin/users/{$user->id}", [ 
+                'name' => 'Updated by Admin',
+                'email' => 'updated@example.com',
             ]);
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+        // Assert: Berhasil dan Redirect
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect(); 
 
-        $this->assertNotNull($user->refresh()->email_verified_at);
-    }
-
-    public function test_user_can_delete_their_account(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->delete('/profile', [
-                'password' => 'password',
-            ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/');
-
-        $this->assertGuest();
-        $this->assertNull($user->fresh());
-    }
-
-    public function test_correct_password_must_be_provided_to_delete_account(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->from('/profile')
-            ->delete('/profile', [
-                'password' => 'wrong-password',
-            ]);
-
-        $response
-            ->assertSessionHasErrorsIn('userDeletion', 'password')
-            ->assertRedirect('/profile');
-
-        $this->assertNotNull($user->fresh());
+        // Assert: Data user berubah
+        $user->refresh();
+        $this->assertSame('Updated by Admin', $user->name);
+        $this->assertSame('updated@example.com', $user->email);
     }
 }

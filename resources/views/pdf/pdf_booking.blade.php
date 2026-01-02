@@ -113,7 +113,6 @@
         <table class="header-table">
             <tr>
                 <td class="logo-cell">
-                    {{-- Pastikan path image benar saat render PDF (biasanya butuh public_path) --}}
                     <img src="{{ public_path('asset/images/logo-umy-sac-transparan-01.png') }}" alt="Logo UMY" width="80" height="auto" style="display: block;">
                 </td>
                 <td class="text-cell">
@@ -139,7 +138,6 @@
         </tr>
         <tr>
             <td class="label">Status</td>
-            {{-- PERUBAHAN DISINI: Mengubah 'approved' menjadi 'Disetujui' --}}
             <td class="val" style="text-transform: uppercase; font-weight: bold; color: green;">
                 {{ $booking->status == 'approved' ? 'Disetujui' : $booking->status }}
             </td>
@@ -172,7 +170,7 @@
 
     <div class="footer">
         <p>Harap tunjukkan bukti ini kepada petugas.</p>
-        <p>Sistem Booking Lapangan UMY &copy; {{ date('Y') }}</p>
+        <p>&copy; Sistem Booking Lapangan UMY{{ date('Y') }}</p>
     </div>
 
 </body>

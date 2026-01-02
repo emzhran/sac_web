@@ -167,7 +167,7 @@ class BookingFlowTest extends TestCase
         $response->assertSessionHas('success');
         $this->assertDatabaseHas('users', [
             'name' => $namaKegiatan,
-            'role' => 'user',
+            'role' => 'guest',
         ]);
 
         $newUser = User::where('name', $namaKegiatan)->first();
